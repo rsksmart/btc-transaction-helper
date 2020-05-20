@@ -12,12 +12,12 @@ const DEFAULT_BTC_CONFIG = {
 };
 
 class BtcTransactionHelper{
-    constructor(btcConfig){
+    constructor(btcConfig) {
         this.btcConfig = Object.assign({}, DEFAULT_BTC_CONFIG, btcConfig);
         this.createBtcClient();
     }
 
-    createBtcClient(){
+    createBtcClient() {
         try {
             this.btcClient = bitcoin.getClient(this.btcConfig.host + ':' + this.btcConfig.port, this.btcConfig.user, this.btcConfig.password, bitcoin.networks[this.btcConfig.network]);
         } 
@@ -26,7 +26,7 @@ class BtcTransactionHelper{
         }
     }
 
-    async generateBtcAddress(type){
+    async generateBtcAddress(type) {
         try {
             type = type || 'legacy';
             const btcAddress = await this.btcClient.generateNewAddress();
@@ -42,7 +42,7 @@ class BtcTransactionHelper{
         }
     }
 
-    async generateMultisigAddress(signerSize, requiredSigners){
+    async generateMultisigAddress(signerSize, requiredSigners) {
         try {
             return await this.btcClient.generateMultisigAddress(signerSize, requiredSigners);
         }
@@ -51,16 +51,16 @@ class BtcTransactionHelper{
         }
     }
 
-    async lock(senderAddress, receiverAddress, amountToLockInBtc){
+    async transferBtc(senderAddress, receiverAddress, amountToLockInBtc) {
         try {
             const INITIAL_BTC_BALANCE = bitcoin.btcToSatoshis(amountToLockInBtc + this.btcConfig.txFee);
-            const BTC_TO_LOCK = bitcoin.btcToSatoshis(amountToLockInBtc);
+            const amountToLockInSatoshis = bitcoin.btcToSatoshis(amountToLockInBtc);
 
             const fundTxId = await this.btcClient.sendToAddress(senderAddress, INITIAL_BTC_BALANCE);
             const fundTx = await this.btcClient.getTransaction(fundTxId);
 
             const txData = {};
-            txData[receiverAddress] = BTC_TO_LOCK;
+            txData[receiverAddress] = amountToLockInSatoshis;
             let txhash = await this.btcClient.sendFromTo(senderAddress, txData, 999, 0, fundTx);
 
             return txhash;
@@ -70,10 +70,10 @@ class BtcTransactionHelper{
         }
     }
 
-    async lockMultisig(senderAddress, receiverAddress, amountToLockInBtc){
+    async transferBtcFromMultisig(senderAddress, receiverAddress, amountToLockInBtc) {
         try {
             const INITIAL_BTC_BALANCE = bitcoin.btcToSatoshis(amountToLockInBtc + this.btcConfig.txFee);
-            const BTC_TO_LOCK = bitcoin.btcToSatoshis(amountToLockInBtc);
+            const amountToLockInSatoshis = bitcoin.btcToSatoshis(amountToLockInBtc);
 
             const addresses = senderAddress;
         
@@ -81,7 +81,7 @@ class BtcTransactionHelper{
             const fundTx = await this.btcClient.getTransaction(fundTxId);
 
             const txData = {};
-            txData[receiverAddress] = BTC_TO_LOCK;
+            txData[receiverAddress] = amountToLockInSatoshis;
             await this.btcClient.sendFromMultisigTo(addresses, txData, 999, 0, fundTx);
         }
         catch(err) {
