@@ -1,6 +1,6 @@
 {
   "name": "btc-transaction-helper",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "peglib": "github:rootstock/peglib#v1.4.1"
+    "bitcoin": "^3.0.1",
+    "bitcoinjs-lib": "^5.1.10"
   }
 }

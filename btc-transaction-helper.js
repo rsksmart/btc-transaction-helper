@@ -1,13 +1,14 @@
 "use strict";
 const BtcHelperException = require('./btc-transaction-helper-error');
-const bitcoin = require('peglib').bitcoin;
+const BtcNodeHelper = require('./btc-node-helper/index');
+const bitcoin = require('bitcoinjs-lib');
 
 const DEFAULT_BTC_CONFIG = {
     host: 'localhost',
     port: '18332',
     user: undefined,
     password: undefined,
-    network: 'testnet',
+    network: bitcoin.networks.regtest,
     txFee: 0.001
 };
 
@@ -19,73 +20,75 @@ class BtcTransactionHelper{
 
     createBtcClient() {
         try {
-            this.btcClient = bitcoin.getClient(this.btcConfig.host + ':' + this.btcConfig.port, this.btcConfig.user, this.btcConfig.password, bitcoin.networks[this.btcConfig.network]);
+            this.btcClient = new BtcNodeHelper(this.btcConfig);
         } 
         catch (err) {
             throw new BtcHelperException('Error creating BTC client', err);
         }
     }
 
-    async generateBtcAddress(type) {
+    generateBtcAddress(type) {
         try {
             type = type || 'legacy';
-            const btcAddress = await this.btcClient.generateNewAddress();
-            const btcPrivateKey = await this.btcClient.getPrivateKey(btcAddress);
-            
-            return {
-                btcAddress: btcAddress,
-                btcPrivateKey: btcPrivateKey
-            }
+            return this.btcClient.generateAddressInformation(type);
         }
         catch (err) {
             throw new BtcHelperException('Error creating BTC address', err);
         }
     }
 
-    async generateMultisigAddress(signerSize, requiredSigners) {
+    generateMultisigAddress(signerSize, requiredSigners, type) {
         try {
-            return await this.btcClient.generateMultisigAddress(signerSize, requiredSigners);
+            return this.btcClient.generateMultisigAddressInformation(signerSize, requiredSigners, type);
         }
         catch (err) {
             throw new BtcHelperException('Error creating multisig BTC address', err);
         }
     }
 
-    async transferBtc(senderAddress, receiverAddress, amountToLockInBtc) {
+    async transferBtc(senderAddressInformation, receiverAddress, amountInBtc) {
         try {
-            const INITIAL_BTC_BALANCE = bitcoin.btcToSatoshis(amountToLockInBtc + this.btcConfig.txFee);
-            const amountToLockInSatoshis = bitcoin.btcToSatoshis(amountToLockInBtc);
+            const fundTxId = await this.btcClient.fundAddress(
+                senderAddressInformation.address,
+                amountInBtc + this.btcConfig.txFee
+            );
+            let fundingTx = bitcoin.Transaction.fromHex(await this.btcClient.getRawTransaction(fundTxId));
 
-            const fundTxId = await this.btcClient.sendToAddress(senderAddress, INITIAL_BTC_BALANCE);
-            const fundTx = await this.btcClient.getTransaction(fundTxId);
+            let outputIndex = -1;
+            for (let i = 0; i < fundingTx.outs.length; i++) {
+                let outputAddress = bitcoin.address.fromOutputScript(fundingTx.outs[i].script, this.btcConfig.network);
+                if (outputAddress == senderAddressInformation.address) {
+                    outputIndex = i;
+                }
+            }
+            if (outputIndex == -1) {
+                throw new Error('funding transaction does not contain the funded adress');
+            }
+            let tx = new bitcoin.Transaction();
+            tx.addInput(Buffer.from(fundingTx.getId(), 'hex').reverse(), outputIndex);
+            tx.addOutput(
+                bitcoin.address.toOutputScript(receiverAddress, this.btcConfig.network),
+                this.btcClient.btcToSatoshis(amountInBtc)
+            );
+            
+            let prevTxs = [];
+            let privateKeys = [senderAddressInformation.privateKey];
+            if (senderAddressInformation.info) {
+                prevTxs.push({
+                    txid: tx.getId(),
+                    vout: outputIndex,
+                    scriptPubKey: fundingTx.outs[outputIndex].script.toString('hex'),
+                    redeemScript: senderAddressInformation.info.redeemScript,
+                    amount: amountInBtc
+                });
+                privateKeys = senderAddressInformation.info.members.map(a => a.privateKey);
+            }
 
-            const txData = {};
-            txData[receiverAddress] = amountToLockInSatoshis;
-            let txhash = await this.btcClient.sendFromTo(senderAddress, txData, 999, 0, fundTx);
-
-            return txhash;
+            let signedTx = await this.btcClient.signTransaction(tx.toHex(), prevTxs, privateKeys);
+            return this.btcClient.sendTransaction(signedTx);
         }
         catch(err) {
-            throw new BtcHelperException('Error during lock process', err);
-        }
-    }
-
-    async transferBtcFromMultisig(senderAddress, receiverAddress, amountToLockInBtc) {
-        try {
-            const INITIAL_BTC_BALANCE = bitcoin.btcToSatoshis(amountToLockInBtc + this.btcConfig.txFee);
-            const amountToLockInSatoshis = bitcoin.btcToSatoshis(amountToLockInBtc);
-
-            const addresses = senderAddress;
-        
-            const fundTxId = await this.btcClient.sendToAddress(senderAddress.btc, INITIAL_BTC_BALANCE);
-            const fundTx = await this.btcClient.getTransaction(fundTxId);
-
-            const txData = {};
-            txData[receiverAddress] = amountToLockInSatoshis;
-            await this.btcClient.sendFromMultisigTo(addresses, txData, 999, 0, fundTx);
-        }
-        catch(err) {
-            throw new BtcHelperException('Error during lock process', err);
+            throw new BtcHelperException('Error during transfer process', err);
         }
     }
 }
