@@ -46,7 +46,7 @@ class BtcTransactionHelper{
         }
     }
 
-    async transferBtc(senderAddressInformation, receiverAddress, amountInBtc) {
+    async transferBtc(senderAddressInformation, receiverAddress, amountInBtc, data) {
         try {
             const fundTxId = await this.btcClient.fundAddress(
                 senderAddressInformation.address,
@@ -70,6 +70,13 @@ class BtcTransactionHelper{
                 bitcoin.address.toOutputScript(receiverAddress, this.btcConfig.network),
                 this.btcClient.btcToSatoshis(amountInBtc)
             );
+
+            if (data) {
+                data.forEach((dataElement) => {
+                    const dataScript = bitcoin.payments.embed({ data: [dataElement] });
+                    tx.addOutput(dataScript.output, 0); // OP_RETURN always with 0 value unless you want to burn coins
+                });
+            }
             
             let prevTxs = [];
             let privateKeys = [senderAddressInformation.privateKey];
