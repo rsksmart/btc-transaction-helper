@@ -7,8 +7,9 @@ const DEFAULT_BTC_CONFIG = {
     host: 'localhost',
     port: '18332',
     user: undefined,
-    password: undefined,
+    pass: undefined,
     network: bitcoin.networks.regtest,
+    timeout: 30000,
     txFee: 0.001
 };
 
