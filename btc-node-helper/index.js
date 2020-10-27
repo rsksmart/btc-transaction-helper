@@ -92,6 +92,10 @@ module.exports = class BtcNodeHelper {
         return promisefy(this.client, this.client.getBlock, [blockHash]);
     }
 
+    getUtxos(address) {
+        return promisefy(this.client, this.client.listUnspent, [null, null, [address]]);
+    }
+
     btcToSatoshis(btc) {
         return parseInt(btc * 1e8);
     }

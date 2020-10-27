@@ -99,6 +99,11 @@ class BtcTransactionHelper{
             throw new BtcHelperException('Error during transfer process', err);
         }
     }
+
+    async getAddressBalance(address) {
+        let utxos = await this.btcClient.getUtxos(address);
+        return utxos.reduce((sum, utxo) => sum + utxo.amount, 0);
+    }
 }
 
 module.exports = BtcTransactionHelper;
