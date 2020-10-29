@@ -53,7 +53,7 @@ class BtcTransactionHelper{
                 senderAddressInformation.address,
                 amountInBtc + this.btcConfig.txFee
             );
-            let fundingTx = bitcoin.Transaction.fromHex(await this.nodeClient.getRawTransaction(fundTxId));
+            let fundingTx = await this.getTransaction(fundTxId);
 
             let outputIndex = -1;
             for (let i = 0; i < fundingTx.outs.length; i++) {
@@ -106,7 +106,17 @@ class BtcTransactionHelper{
     }
 
     getOutputAddress(outputScript) {
-        return bitcoin.address.fromOutputScript(outputScript, this.btcConfig.network);
+        try {
+            return bitcoin.address.fromOutputScript(outputScript, this.btcConfig.network);
+        }
+        catch(err) { // Outputs with OP_RETURN do not have an address
+            return null;
+        }
+    }
+
+    async getTransaction(txHash) {
+        let rawTx = await this.nodeClient.getRawTransaction(txHash)
+        return bitcoin.Transaction.fromHex(rawTx);
     }
 }
 
