@@ -57,7 +57,7 @@ class BtcTransactionHelper{
 
             let outputIndex = -1;
             for (let i = 0; i < fundingTx.outs.length; i++) {
-                let outputAddress = bitcoin.address.fromOutputScript(fundingTx.outs[i].script, this.btcConfig.network);
+                let outputAddress = this.getOutputAddress(fundingTx.outs[i].script);
                 if (outputAddress == senderAddressInformation.address) {
                     outputIndex = i;
                 }
@@ -103,6 +103,10 @@ class BtcTransactionHelper{
     async getAddressBalance(address) {
         let utxos = await this.nodeClient.getUtxos(address);
         return utxos.reduce((sum, utxo) => sum + utxo.amount, 0);
+    }
+
+    getOutputAddress(outputScript) {
+        return bitcoin.address.fromOutputScript(outputScript, this.btcConfig.network);
     }
 }
 
