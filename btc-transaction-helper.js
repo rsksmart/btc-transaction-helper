@@ -16,12 +16,12 @@ const DEFAULT_BTC_CONFIG = {
 class BtcTransactionHelper{
     constructor(btcConfig) {
         this.btcConfig = Object.assign({}, DEFAULT_BTC_CONFIG, btcConfig);
-        this.createBtcClient();
+        this.createNodeClient();
     }
 
-    createBtcClient() {
+    createNodeClient() {
         try {
-            this.btcClient = new BtcNodeHelper(this.btcConfig);
+            this.nodeClient = new BtcNodeHelper(this.btcConfig);
         } 
         catch (err) {
             throw new BtcHelperException('Error creating BTC client', err);
@@ -31,7 +31,7 @@ class BtcTransactionHelper{
     generateBtcAddress(type) {
         try {
             type = type || 'legacy';
-            return this.btcClient.generateAddressInformation(type);
+            return this.nodeClient.generateAddressInformation(type);
         }
         catch (err) {
             throw new BtcHelperException('Error creating BTC address', err);
@@ -40,7 +40,7 @@ class BtcTransactionHelper{
 
     generateMultisigAddress(signerSize, requiredSigners, type) {
         try {
-            return this.btcClient.generateMultisigAddressInformation(signerSize, requiredSigners, type);
+            return this.nodeClient.generateMultisigAddressInformation(signerSize, requiredSigners, type);
         }
         catch (err) {
             throw new BtcHelperException('Error creating multisig BTC address', err);
@@ -49,11 +49,11 @@ class BtcTransactionHelper{
 
     async transferBtc(senderAddressInformation, receiverAddress, amountInBtc, data) {
         try {
-            const fundTxId = await this.btcClient.fundAddress(
+            const fundTxId = await this.nodeClient.fundAddress(
                 senderAddressInformation.address,
                 amountInBtc + this.btcConfig.txFee
             );
-            let fundingTx = bitcoin.Transaction.fromHex(await this.btcClient.getRawTransaction(fundTxId));
+            let fundingTx = bitcoin.Transaction.fromHex(await this.nodeClient.getRawTransaction(fundTxId));
 
             let outputIndex = -1;
             for (let i = 0; i < fundingTx.outs.length; i++) {
@@ -69,7 +69,7 @@ class BtcTransactionHelper{
             tx.addInput(Buffer.from(fundingTx.getId(), 'hex').reverse(), outputIndex);
             tx.addOutput(
                 bitcoin.address.toOutputScript(receiverAddress, this.btcConfig.network),
-                this.btcClient.btcToSatoshis(amountInBtc)
+                this.nodeClient.btcToSatoshis(amountInBtc)
             );
 
             if (data) {
@@ -92,8 +92,8 @@ class BtcTransactionHelper{
                 privateKeys = senderAddressInformation.info.members.map(a => a.privateKey);
             }
 
-            let signedTx = await this.btcClient.signTransaction(tx.toHex(), prevTxs, privateKeys);
-            return this.btcClient.sendTransaction(signedTx);
+            let signedTx = await this.nodeClient.signTransaction(tx.toHex(), prevTxs, privateKeys);
+            return this.nodeClient.sendTransaction(signedTx);
         }
         catch(err) {
             throw new BtcHelperException('Error during transfer process', err);
@@ -101,7 +101,7 @@ class BtcTransactionHelper{
     }
 
     async getAddressBalance(address) {
-        let utxos = await this.btcClient.getUtxos(address);
+        let utxos = await this.nodeClient.getUtxos(address);
         return utxos.reduce((sum, utxo) => sum + utxo.amount, 0);
     }
 }
