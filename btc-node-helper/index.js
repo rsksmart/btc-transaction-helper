@@ -101,6 +101,6 @@ module.exports = class BtcNodeHelper {
     }
 
     satoshisToBtc(satoshi) {
-        return parseInt(satoshi / 1e8);
+        return parseFloat(satoshi / 1e8);
     }
 };
