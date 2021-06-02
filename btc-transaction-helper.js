@@ -49,9 +49,10 @@ class BtcTransactionHelper{
 
     async transferBtc(senderAddressInformation, receiverAddress, amountInBtc, data) {
         try {
+            let fundAmount = Number(amountInBtc + this.btcConfig.txFee).toFixed(8);
             const fundTxId = await this.nodeClient.fundAddress(
                 senderAddressInformation.address,
-                amountInBtc + this.btcConfig.txFee
+                fundAmount
             );
             let fundingTx = await this.getTransaction(fundTxId);
 
