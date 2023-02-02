@@ -2,16 +2,12 @@
 
 Utility library to generate BTC addresses (legacy, segwit and multisig) and its BTC private key and execute transfers.
 
+**Note:** These samples require a running bitcoin instance to connect to. Each file contains the configuration that should be updated to point to the running bitcoin instance.
+
 ## Running samples
 
 > node samples/rpc-commands.js
 
 > node samples/transferBtc-samples.js
 
-'bitcoind' should be running before running these samples.
-
-## Running tests
-
-> npm run test
-
-This is an integration test. 'bitcoind' should be running before running this test.
+> node samples/import-address.js
