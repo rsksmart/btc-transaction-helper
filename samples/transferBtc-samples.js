@@ -1,19 +1,12 @@
 const BtcTransactionHelper = require('../index').BtcTransactionHelper;
-const network = require('../index').networks.regtest;
+const config = require('./config');
 
 (async() => {
-    let config = {
-        host: 'localhost',
-        port: 18332,
-        user: 'rsk',
-        pass: 'rsk',
-        timeout: 30000,
-        network: network
-    };
-    let btcTransactionHelper = new BtcTransactionHelper(config);
+
+    const btcTransactionHelper = new BtcTransactionHelper(config);
+    const data = [];
     let sender;
     let recipient;
-    let data = [];
     
     console.log('- P2PKH');
     sender = await btcTransactionHelper.generateBtcAddress('legacy');

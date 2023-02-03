@@ -119,6 +119,11 @@ class BtcTransactionHelper{
         let rawTx = await this.nodeClient.getRawTransaction(txHash)
         return bitcoin.Transaction.fromHex(rawTx);
     }
+
+    async importAddress(address, label) {
+        return await this.nodeClient.execute('importaddress', [address, label]);
+    }
+
 }
 
 module.exports = BtcTransactionHelper;

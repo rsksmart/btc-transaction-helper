@@ -88,12 +88,20 @@ module.exports = class BtcNodeHelper {
         return promisefy(this.client, this.client.generate, [blocks]);
     };
     
-    getBlock(blockHash) {
-        return promisefy(this.client, this.client.getBlock, [blockHash]);
+    getBlock(blockHash, deserialized = true) {
+        return promisefy(this.client, this.client.getBlock, [blockHash, deserialized]);
+    }
+
+    getBlockCount() {
+        return promisefy(this.client, this.client.getBlockCount, []);
     }
 
     getUtxos(address) {
         return promisefy(this.client, this.client.listUnspent, [null, null, [address]]);
+    }
+
+    execute(cmd, args = []) {
+        return promisefy(this.client, this.client.cmd, [cmd].concat(args));
     }
 
     btcToSatoshis(btc) {
