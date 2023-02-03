@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bitcoin": "^3.0.1",
-    "bitcoinjs-lib": "^5.1.10"
+    "bitcoinjs-lib": "^5.1.10",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0"
   }
 }
