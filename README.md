@@ -11,4 +11,4 @@ Utility library to generate BTC addresses (legacy, segwit and multisig) and its 
 
 > node samples/conversion.js
  
-**Note:** These samples require a running bitcoin instance to connect to. Each file contains the configuration that should be updated to point to the running bitcoin instance (except for 'conversion').
+**Note:** These samples (except for 'conversion') require a running bitcoin instance to connect to. Update `samples/config.js` with the proper configuration.
