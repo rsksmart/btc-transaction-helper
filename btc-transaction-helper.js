@@ -124,6 +124,30 @@ class BtcTransactionHelper{
         return await this.nodeClient.execute('importaddress', [address, label]);
     }
 
+    /**
+     * 
+     * @param {string} address to be funded
+     * @param {number} amount in btc to be send to the address
+     * @returns {string} btcTxHash
+     */
+    async fundAddress(address, amountInBtc) {
+        const fundAmount = Number(amountInBtc + this.btcConfig.txFee).toFixed(8);
+        const btcTxHash = await this.nodeClient.fundAddress(
+            address,
+            fundAmount
+        );
+        return btcTxHash;
+    }
+
+    /**
+     * 
+     * @param {number} blocks to mine. Defaults to 1.
+     * @returns {string} btcTxHash
+     */
+    async mine(blocks = 1) {
+        return await this.nodeClient.mine(blocks);
+    }
+
 }
 
 module.exports = BtcTransactionHelper;
