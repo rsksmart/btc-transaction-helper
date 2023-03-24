@@ -2,6 +2,7 @@
 const BtcHelperException = require('./btc-transaction-helper-error');
 const BtcNodeHelper = require('./btc-node-helper/index');
 const bitcoin = require('bitcoinjs-lib');
+const { btcToSatoshis, satoshisToBtc } = require('./conversion');
 
 const DEFAULT_BTC_CONFIG = {
     host: 'localhost',
@@ -47,31 +48,73 @@ class BtcTransactionHelper{
         }
     }
 
-    async transferBtc(senderAddressInformation, receiverAddress, amountInBtc, data) {
-        try {
-            let fundAmount = Number(amountInBtc + this.btcConfig.txFee).toFixed(8);
-            const fundTxId = await this.nodeClient.fundAddress(
-                senderAddressInformation.address,
-                fundAmount
-            );
-            let fundingTx = await this.getTransaction(fundTxId);
+    /**
+     * 
+     * @param {string} address 
+     * @param {number} amountInBtc
+     * @returns 
+     */
+    async selectSpendableUTXOsFromAddress(address, amountInBtc) {
 
-            let outputIndex = -1;
-            for (let i = 0; i < fundingTx.outs.length; i++) {
-                let outputAddress = this.getOutputAddress(fundingTx.outs[i].script);
-                if (outputAddress == senderAddressInformation.address) {
-                    outputIndex = i;
-                }
+        const utxos = await this.getUtxosWithBalanceInSatoshis(address);
+
+        const selected = [];
+        let accumulated = 0;
+
+        for(let i = 0; i < utxos.length && accumulated < amountInBtc; i++) {
+            selected.push(utxos[i]);
+            accumulated += utxos[i].amount;
+        }
+
+        // Necessary to avoid floating point operation issues
+        const change = satoshisToBtc(btcToSatoshis(accumulated) - btcToSatoshis(amountInBtc));
+
+        return {
+            utxos: selected,
+            change: change,
+        };
+
+    };
+
+    async getUtxosWithBalanceInSatoshis(address) {
+        return await this.getUtxos(address);
+    }
+
+    async getUtxos(address) {
+        return await this.nodeClient.getUtxos(address);
+    }
+
+    async transferBtc(senderAddressInformation, outputs, data) {
+        try {
+
+            const totalAmountInBtc = outputs.reduce((outputA, outputB) =>  outputA.amountInBtc + outputB.amountInBtc, { amountInBtc: 0 });
+
+            const fromAddress = senderAddressInformation.address;
+            const utxosInfo = await this.selectSpendableUTXOsFromAddress(fromAddress, totalAmountInBtc);
+
+            const tx = new bitcoin.Transaction();
+
+            utxosInfo.utxos.forEach(uxto => {
+                tx.addInput(Buffer.from(uxto.txid, 'hex').reverse(), uxto.vout);
+            });
+
+            // Adding the transfer outputs
+            outputs.forEach(output => {
+                tx.addOutput(
+                    bitcoin.address.toOutputScript(output.recipientAddress, this.btcConfig.network),
+                    this.nodeClient.btcToSatoshis(output.amountInBtc)
+                );
+            });
+
+            const actualChange = utxosInfo.change - this.btcConfig.txFee;
+
+            // Adding the change output
+            if(utxosInfo.change > 0) {
+                tx.addOutput(
+                    bitcoin.address.toOutputScript(fromAddress, this.btcConfig.network),
+                    this.nodeClient.btcToSatoshis(actualChange)
+                );
             }
-            if (outputIndex == -1) {
-                throw new Error('funding transaction does not contain the funded adress');
-            }
-            let tx = new bitcoin.Transaction();
-            tx.addInput(Buffer.from(fundingTx.getId(), 'hex').reverse(), outputIndex);
-            tx.addOutput(
-                bitcoin.address.toOutputScript(receiverAddress, this.btcConfig.network),
-                this.nodeClient.btcToSatoshis(amountInBtc)
-            );
 
             if (data) {
                 data.forEach((dataElement) => {
@@ -80,20 +123,24 @@ class BtcTransactionHelper{
                 });
             }
             
-            let prevTxs = [];
+            const prevTxs = [];
             let privateKeys = [senderAddressInformation.privateKey];
+
             if (senderAddressInformation.info) {
-                prevTxs.push({
-                    txid: tx.getId(),
-                    vout: outputIndex,
-                    scriptPubKey: fundingTx.outs[outputIndex].script.toString('hex'),
-                    redeemScript: senderAddressInformation.info.redeemScript,
-                    amount: amountInBtc
+                utxosInfo.utxos.forEach(uxto => {
+                    prevTxs.push({
+                        txid: tx.getId(),
+                        vout: uxto.vout,
+                        scriptPubKey: uxto.scriptPubKey.toString('hex'),
+                        redeemScript: senderAddressInformation.info.redeemScript,
+                        amount: uxto.amount
+                    });
                 });
+                
                 privateKeys = senderAddressInformation.info.members.map(a => a.privateKey);
             }
 
-            let signedTx = await this.nodeClient.signTransaction(tx.toHex(), prevTxs, privateKeys);
+            const signedTx = await this.nodeClient.signTransaction(tx.toHex(), prevTxs, privateKeys);
             return this.nodeClient.sendTransaction(signedTx);
         }
         catch(err) {
