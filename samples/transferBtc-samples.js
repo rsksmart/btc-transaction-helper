@@ -21,7 +21,7 @@ const printP2PKHTransferHash = async () => {
     await btcTransactionHelper.mine(1);
 
     const recipientBalance = await btcTransactionHelper.getAddressBalance(recipient.address);
-    console.log('recipientBalance: ', recipientBalance);
+    console.log('recipientBalance: ', recipientBalance); // 1
 
 };
 
@@ -45,7 +45,7 @@ const printP2SHP2WPKHTransferHash = async () => {
     await btcTransactionHelper.mine(1);
 
     const recipientBalance = await btcTransactionHelper.getAddressBalance(recipient.address);
-    console.log('recipientBalance: ', recipientBalance);
+    console.log('recipientBalance: ', recipientBalance); // 2
 
 };
 
@@ -69,7 +69,7 @@ const printP2SHMULTISIGTransferHash = async () => {
     await btcTransactionHelper.mine(1);
 
     const recipientBalance = await btcTransactionHelper.getAddressBalance(recipient.address);
-    console.log('recipientBalance: ', recipientBalance);
+    console.log('recipientBalance: ', recipientBalance); // 3
 };
 
 const printP2SHP2WSHTransferHash = async () => {
@@ -92,7 +92,7 @@ const printP2SHP2WSHTransferHash = async () => {
     await btcTransactionHelper.mine(1);
 
     const recipientBalance = await btcTransactionHelper.getAddressBalance(recipient.address);
-    console.log('recipientBalance: ', recipientBalance);
+    console.log('recipientBalance: ', recipientBalance); // 4
 
 };
 
@@ -119,13 +119,13 @@ const printP2PKHWithDataTransferHash = async () => {
     await btcTransactionHelper.mine(1);
 
     const recipientBalance = await btcTransactionHelper.getAddressBalance(recipient.address);
-    console.log('recipientBalance: ', recipientBalance);
+    console.log('recipientBalance: ', recipientBalance); // 5
 
 };
 
 const printP2PKHTransferHashMultipleOutputs = async () => {
 
-    console.log('- P2PKH');
+    console.log('- P2PKH multiple outputs');
     const transferAmountInBtcToRecipient1 = 3;
     const transferAmountInBtcToRecipient2 = 5;
 
@@ -150,8 +150,8 @@ const printP2PKHTransferHashMultipleOutputs = async () => {
     const recipient1Balance = await btcTransactionHelper.getAddressBalance(recipient1.address);
     console.log('recipient1Balance: ', recipient1Balance);
 
-    const recipient2Balance = await btcTransactionHelper.getAddressBalance(recipient1.address);
-    console.log('recipient2Balance: ', recipient2Balance);
+    const recipient2Balance = await btcTransactionHelper.getAddressBalance(recipient2.address); // 3
+    console.log('recipient2Balance: ', recipient2Balance); // 5
 
 };
 
@@ -162,6 +162,6 @@ const printP2PKHTransferHashMultipleOutputs = async () => {
     await printP2SHMULTISIGTransferHash();
     await printP2SHP2WSHTransferHash();
     await printP2PKHWithDataTransferHash();
-    //await printP2PKHTransferHashMultipleOutputs();
+    await printP2PKHTransferHashMultipleOutputs();
 
 })();

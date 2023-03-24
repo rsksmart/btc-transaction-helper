@@ -87,11 +87,13 @@ class BtcTransactionHelper{
     async transferBtc(senderAddressInformation, outputs, data) {
         try {
 
-            const totalAmountInBtc = outputs.reduce((outputA, outputB) =>  outputA.amountInBtc + outputB.amountInBtc, { amountInBtc: 0 });
+            const totalAmountInBtc = outputs.reduce((sum, output) => {
+                return sum + output.amountInBtc;
+            }, 0);
 
             const fromAddress = senderAddressInformation.address;
             const utxosInfo = await this.selectSpendableUTXOsFromAddress(fromAddress, totalAmountInBtc);
-
+            
             const tx = new bitcoin.Transaction();
 
             utxosInfo.utxos.forEach(uxto => {
