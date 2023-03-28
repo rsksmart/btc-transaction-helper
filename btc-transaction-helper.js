@@ -84,6 +84,14 @@ class BtcTransactionHelper{
         return await this.nodeClient.getUtxos(address);
     }
 
+    /**
+     * Transfers the btc amounts to the recipients specified in the `outputs`.
+     * Gets the spendable utxos of the `senderAddressInformation` up to the sum of the `amountInBtc`s specified in the `outputs`.
+     * @param {{address: string, privateKey: string, info?: any }} senderAddressInformation 
+     * @param {Array<{recipientAddress: string, amountInBtc: number}>} outputs 
+     * @param {Array<any>} data 
+     * @returns {string} btcTxHash
+     */
     async transferBtc(senderAddressInformation, outputs, data) {
         try {
 
