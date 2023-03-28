@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 const BtcHelperException = require('./btc-transaction-helper-error');
 const BtcNodeHelper = require('./btc-node-helper/index');
 const bitcoin = require('bitcoinjs-lib');
@@ -56,7 +56,7 @@ class BtcTransactionHelper{
      */
     async selectSpendableUTXOsFromAddress(address, amountInBtc) {
 
-        const utxos = await this.getUtxosWithBalanceInSatoshis(address);
+        const utxos = await this.getUtxos(address);
 
         const selected = [];
         let accumulated = 0;
@@ -75,10 +75,6 @@ class BtcTransactionHelper{
         };
 
     };
-
-    async getUtxosWithBalanceInSatoshis(address) {
-        return await this.getUtxos(address);
-    }
 
     async getUtxos(address) {
         return await this.nodeClient.getUtxos(address);
