@@ -29,6 +29,11 @@ class BtcTransactionHelper{
         }
     }
 
+    /**
+     * 
+     * @param {AddressType} type 
+     * @returns {AddressInformation}
+     */
     generateBtcAddress(type) {
         try {
             type = type || 'legacy';
@@ -39,6 +44,13 @@ class BtcTransactionHelper{
         }
     }
 
+    /**
+     * 
+     * @param {number} signerSize 
+     * @param {number} requiredSigners 
+     * @param {AddressType} type 
+     * @returns {MultisigAddressInformation}
+     */
     generateMultisigAddress(signerSize, requiredSigners, type) {
         try {
             return this.nodeClient.generateMultisigAddressInformation(signerSize, requiredSigners, type);
@@ -52,7 +64,7 @@ class BtcTransactionHelper{
      * 
      * @param {string} address 
      * @param {number} amountInBtc
-     * @returns 
+     * @returns {SpendableUtxosInformation}
      */
     async selectSpendableUTXOsFromAddress(address, amountInBtc) {
 
@@ -66,6 +78,11 @@ class BtcTransactionHelper{
             accumulated += utxos[i].amount;
         }
 
+        // At this point `accumulated` should be greater than `amountInBtc`. If not, throw error.
+        if(accumulated < amountInBtc) {
+            throw Error('The sender does not have enough balance to proceed with the transfer');
+        }
+
         // Necessary to avoid floating point operation issues
         const change = satoshisToBtc(btcToSatoshis(accumulated) - btcToSatoshis(amountInBtc));
 
@@ -76,22 +93,27 @@ class BtcTransactionHelper{
 
     };
 
+    /**
+     * 
+     * @param {string} address 
+     * @returns {TxOutput[]} utxos
+     */
     async getUtxos(address) {
         return await this.nodeClient.getUtxos(address);
     }
 
     /**
-     * Transfers the btc amounts to the recipients specified in the `outputs`.
-     * Gets the spendable utxos of the `senderAddressInformation` up to the sum of the `amountInBtc`s specified in the `outputs`.
+     * Transfers the btc amounts to the recipients specified in the `recipientsTransactionInformation`.
+     * Gets the spendable utxos of the `senderAddressInformation` up to the sum of the `amountInBtc`s specified in the `recipientsTransactionInformation`.
      * @param {{address: string, privateKey: string, info?: any }} senderAddressInformation 
-     * @param {Array<{recipientAddress: string, amountInBtc: number}>} outputs 
-     * @param {Array<any>} data 
+     * @param {Array<{recipientAddress: string, amountInBtc: number}>} recipientsTransactionInformation 
+     * @param {Buffer[]} paymentData 
      * @returns {string} btcTxHash
      */
-    async transferBtc(senderAddressInformation, outputs, data) {
+    async transferBtc(senderAddressInformation, recipientsTransactionInformation, paymentData) {
         try {
 
-            const totalAmountInBtc = outputs.reduce((sum, output) => {
+            const totalAmountInBtc = recipientsTransactionInformation.reduce((sum, output) => {
                 return sum + output.amountInBtc;
             }, 0);
 
@@ -104,8 +126,8 @@ class BtcTransactionHelper{
                 tx.addInput(Buffer.from(uxto.txid, 'hex').reverse(), uxto.vout);
             });
 
-            // Adding the transfer outputs
-            outputs.forEach(output => {
+            // Adding the transfer recipientsTransactionInformation outputs
+            recipientsTransactionInformation.forEach(output => {
                 tx.addOutput(
                     bitcoin.address.toOutputScript(output.recipientAddress, this.btcConfig.network),
                     this.nodeClient.btcToSatoshis(output.amountInBtc)
@@ -115,16 +137,17 @@ class BtcTransactionHelper{
             const actualChange = utxosInfo.change - this.btcConfig.txFee;
 
             // Adding the change output
-            if(utxosInfo.change > 0) {
+            if(actualChange > 0) {
                 tx.addOutput(
                     bitcoin.address.toOutputScript(fromAddress, this.btcConfig.network),
                     this.nodeClient.btcToSatoshis(actualChange)
                 );
             }
 
-            if (data) {
-                data.forEach((dataElement) => {
-                    const dataScript = bitcoin.payments.embed({ data: [dataElement] });
+            if (paymentData) {
+                paymentData.forEach(data => {
+                    bitcoin.payments.embed
+                    const dataScript = bitcoin.payments.embed({ data: [data] });
                     tx.addOutput(dataScript.output, 0); // OP_RETURN always with 0 value unless you want to burn coins
                 });
             }
@@ -154,11 +177,21 @@ class BtcTransactionHelper{
         }
     }
 
+    /**
+     * 
+     * @param {string} address 
+     * @returns {number}
+     */
     async getAddressBalance(address) {
         let utxos = await this.nodeClient.getUtxos(address);
         return utxos.reduce((sum, utxo) => sum + utxo.amount, 0);
     }
 
+    /**
+     * 
+     * @param {Buffer} outputScript 
+     * @returns {string}
+     */
     getOutputAddress(outputScript) {
         try {
             return bitcoin.address.fromOutputScript(outputScript, this.btcConfig.network);
@@ -168,11 +201,22 @@ class BtcTransactionHelper{
         }
     }
 
+    /**
+     * 
+     * @param {string} txHash 
+     * @returns {Transaction}
+     */
     async getTransaction(txHash) {
         let rawTx = await this.nodeClient.getRawTransaction(txHash)
         return bitcoin.Transaction.fromHex(rawTx);
     }
 
+    /**
+     * 
+     * @param {string} address 
+     * @param {string} label 
+     * @returns {null}
+     */
     async importAddress(address, label) {
         return await this.nodeClient.execute('importaddress', [address, label]);
     }
@@ -183,8 +227,9 @@ class BtcTransactionHelper{
      * @param {number} amount in btc to be send to the address
      * @returns {string} btcTxHash
      */
-    async fundAddress(address, amountInBtc) {
-        const fundAmount = Number(amountInBtc + this.btcConfig.txFee).toFixed(8);
+    async fundAddress(address, amountInBtc, addFee = true) {
+        const total = addFee ? amountInBtc + this.btcConfig.txFee : amountInBtc;
+        const fundAmount = Number(total).toFixed(8);
         const btcTxHash = await this.nodeClient.fundAddress(
             address,
             fundAmount
