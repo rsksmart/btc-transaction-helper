@@ -146,7 +146,6 @@ class BtcTransactionHelper{
 
             if (paymentData) {
                 paymentData.forEach(data => {
-                    bitcoin.payments.embed
                     const dataScript = bitcoin.payments.embed({ data: [data] });
                     tx.addOutput(dataScript.output, 0); // OP_RETURN always with 0 value unless you want to burn coins
                 });
