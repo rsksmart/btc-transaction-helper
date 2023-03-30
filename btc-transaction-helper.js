@@ -223,7 +223,7 @@ class BtcTransactionHelper{
     /**
      * 
      * @param {string} address to be funded
-     * @param {number} amount in btc to be send to the address
+     * @param {number} amountInBtc in btc to be send to the address
      * @returns {string} btcTxHash
      */
     async fundAddress(address, amountInBtc, addFee = true) {

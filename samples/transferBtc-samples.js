@@ -1,4 +1,4 @@
-const BtcTransactionHelper = require('../index').BtcTransactionHelper;
+const BtcTransactionHelper = require('../btc-transaction-helper');
 const config = require('./config');
 
 const printP2PKHTransferHash = async () => {
