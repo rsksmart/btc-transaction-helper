@@ -10,8 +10,7 @@ const printP2PKHTransferHash = async () => {
     const sender = await btcTransactionHelper.generateBtcAddress('legacy');
     const recipient = await btcTransactionHelper.generateBtcAddress('legacy');
 
-    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc);
-    await btcTransactionHelper.mine(1);
+    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc + btcTransactionHelper.getFee());
 
     const outputs = [{recipientAddress: recipient.address, amountInBtc: transferAmountInBtc}];
 
@@ -34,8 +33,7 @@ const printP2PKHTransferHashWithDecimalAmountInBtc = async () => {
     const sender = await btcTransactionHelper.generateBtcAddress('legacy');
     const recipient = await btcTransactionHelper.generateBtcAddress('legacy');
 
-    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc);
-    await btcTransactionHelper.mine(1);
+    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc + btcTransactionHelper.getFee());
 
     const outputs = [{recipientAddress: recipient.address, amountInBtc: transferAmountInBtc}];
 
@@ -58,8 +56,7 @@ const printP2SHP2WPKHTransferHash = async () => {
     const sender = await btcTransactionHelper.generateBtcAddress('p2sh-segwit');
     const recipient = await btcTransactionHelper.generateBtcAddress('p2sh-segwit');
 
-    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc);
-    await btcTransactionHelper.mine(1);
+    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc + btcTransactionHelper.getFee());
 
     const outputs = [{recipientAddress: recipient.address, amountInBtc: transferAmountInBtc}];
 
@@ -82,8 +79,7 @@ const printP2SHMULTISIGTransferHash = async () => {
     const sender = await btcTransactionHelper.generateMultisigAddress(3, 2, 'legacy');
     const recipient = await btcTransactionHelper.generateBtcAddress('legacy');
 
-    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc);
-    await btcTransactionHelper.mine(1);
+    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc + btcTransactionHelper.getFee());
 
     const outputs = [{recipientAddress: recipient.address, amountInBtc: transferAmountInBtc}];
 
@@ -105,8 +101,7 @@ const printP2SHP2WSHTransferHash = async () => {
     const sender = await btcTransactionHelper.generateMultisigAddress(3, 2, 'p2sh-segwit');
     const recipient = await btcTransactionHelper.generateBtcAddress('legacy');
 
-    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc);
-    await btcTransactionHelper.mine(1);
+    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc + btcTransactionHelper.getFee());
 
     const outputs = [{recipientAddress: recipient.address, amountInBtc: transferAmountInBtc}];
 
@@ -132,8 +127,7 @@ const printP2PKHWithDataTransferHash = async () => {
     data[0] = Buffer.from('52534b54010e537aad84447a2c2a7590d5f2665ef5cf9b667a014f4c767a2d308eebb3f0f1247f9163c896e0b7d2', 'hex');
     data[1] = Buffer.from('52534b540172c57eaedb70e707b608b1d51a38d91318685426', 'hex');
 
-    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc);
-    await btcTransactionHelper.mine(1);
+    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc + btcTransactionHelper.getFee());
 
     const outputs = [{recipientAddress: recipient.address, amountInBtc: transferAmountInBtc}];
 
@@ -152,14 +146,14 @@ const printP2PKHTransferHashMultipleOutputs = async () => {
     console.log('- P2PKH multiple outputs');
     const transferAmountInBtcToRecipient1 = 3;
     const transferAmountInBtcToRecipient2 = 5;
+    const totalAmountInBtc = transferAmountInBtcToRecipient1 + transferAmountInBtcToRecipient2;
 
     const btcTransactionHelper = new BtcTransactionHelper(config);
     const sender = await btcTransactionHelper.generateBtcAddress('legacy');
     const recipient1 = await btcTransactionHelper.generateBtcAddress('legacy');
     const recipient2 = await btcTransactionHelper.generateBtcAddress('legacy');
 
-    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtcToRecipient1 + transferAmountInBtcToRecipient2);
-    await btcTransactionHelper.mine(1);
+    await btcTransactionHelper.fundAddress(sender.address, totalAmountInBtc + btcTransactionHelper.getFee());
 
     const outputs = [
         {recipientAddress: recipient1.address, amountInBtc: transferAmountInBtcToRecipient1},
@@ -184,13 +178,13 @@ const printP2PKHTransferHashMultipleOutputsToSameRecipient = async () => {
     console.log('- P2PKH multiple outputs');
     const transferAmountInBtcToRecipient1 = 3;
     const transferAmountInBtcToRecipient2 = 5;
+    const totalAmountInBtc = transferAmountInBtcToRecipient1 + transferAmountInBtcToRecipient2;
 
     const btcTransactionHelper = new BtcTransactionHelper(config);
     const sender = await btcTransactionHelper.generateBtcAddress('legacy');
     const recipient = await btcTransactionHelper.generateBtcAddress('legacy');
 
-    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtcToRecipient1 + transferAmountInBtcToRecipient2);
-    await btcTransactionHelper.mine(1);
+    await btcTransactionHelper.fundAddress(sender.address, totalAmountInBtc + btcTransactionHelper.getFee());
 
     const outputs = [
         {recipientAddress: recipient.address, amountInBtc: transferAmountInBtcToRecipient1},
@@ -218,7 +212,6 @@ const printP2PKHTransferHashThrowsAnErrorWhenSenderHasInsufficientBalance = asyn
     const recipient = await btcTransactionHelper.generateBtcAddress('legacy');
 
     await btcTransactionHelper.fundAddress(sender.address, fundAmountInBtc);
-    await btcTransactionHelper.mine(1);
 
     const outputs = [{recipientAddress: recipient.address, amountInBtc: transferAmountInBtc}];
 
@@ -239,8 +232,7 @@ const printP2PKHTransferHashWith0Change = async () => {
     const sender = await btcTransactionHelper.generateBtcAddress('legacy');
     const recipient = await btcTransactionHelper.generateBtcAddress('legacy');
 
-    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc);
-    await btcTransactionHelper.mine(1);
+    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc + btcTransactionHelper.getFee());
 
     const outputs = [{recipientAddress: recipient.address, amountInBtc: transferAmountInBtc}];
 
@@ -267,8 +259,7 @@ const printP2PKHTransferHashWithChange = async () => {
     const sender = await btcTransactionHelper.generateBtcAddress('legacy');
     const recipient = await btcTransactionHelper.generateBtcAddress('legacy');
 
-    await btcTransactionHelper.fundAddress(sender.address, fundAmountInBtc);
-    await btcTransactionHelper.mine(1);
+    await btcTransactionHelper.fundAddress(sender.address, fundAmountInBtc + btcTransactionHelper.getFee());
 
     const outputs = [{recipientAddress: recipient.address, amountInBtc: transferAmountInBtc}];
 
@@ -294,8 +285,7 @@ const printP2PKHTransferHashWithNotEnoughForFees = async () => {
     const sender = await btcTransactionHelper.generateBtcAddress('legacy');
     const recipient = await btcTransactionHelper.generateBtcAddress('legacy');
 
-    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc, false);
-    await btcTransactionHelper.mine(1);
+    await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc);
 
     const outputs = [{recipientAddress: recipient.address, amountInBtc: transferAmountInBtc}];
 

@@ -224,15 +224,18 @@ class BtcTransactionHelper{
      * 
      * @param {string} address to be funded
      * @param {number} amountInBtc in btc to be send to the address
+     * @param {boolean} mineBlock if true, a block will be mined after the transaction is sent. Defaults to true.
      * @returns {string} btcTxHash
      */
-    async fundAddress(address, amountInBtc, addFee = true) {
-        const total = addFee ? amountInBtc + this.btcConfig.txFee : amountInBtc;
-        const fundAmount = Number(total).toFixed(8);
+    async fundAddress(address, amountInBtc, mineBlock = true) {
+        const fundAmount = Number(amountInBtc).toFixed(8);
         const btcTxHash = await this.nodeClient.fundAddress(
             address,
             fundAmount
         );
+        if(mineBlock) {
+            await this.mine();
+        }
         return btcTxHash;
     }
 
@@ -243,6 +246,10 @@ class BtcTransactionHelper{
      */
     async mine(blocks = 1) {
         return await this.nodeClient.mine(blocks);
+    }
+
+    getFee() {
+        return this.btcConfig.txFee;
     }
 
 }
