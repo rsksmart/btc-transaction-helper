@@ -224,9 +224,10 @@ class BtcTransactionHelper{
      * 
      * @param {string} address to be funded
      * @param {number} amountInBtc in btc to be send to the address
+     * @param {boolean} addFee if true, the txFee will be added to the amountInBtc. Defaults to false.
      * @returns {string} btcTxHash
      */
-    async fundAddress(address, amountInBtc, addFee = true) {
+    async fundAddress(address, amountInBtc, addFee = false) {
         const total = addFee ? amountInBtc + this.btcConfig.txFee : amountInBtc;
         const fundAmount = Number(total).toFixed(8);
         const btcTxHash = await this.nodeClient.fundAddress(
