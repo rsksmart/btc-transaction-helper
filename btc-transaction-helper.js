@@ -248,6 +248,10 @@ class BtcTransactionHelper{
         return await this.nodeClient.mine(blocks);
     }
 
+    /**
+     * 
+     * @returns {number} txFee
+     */
     getFee() {
         return this.btcConfig.txFee;
     }
