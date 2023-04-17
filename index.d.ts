@@ -42,4 +42,6 @@ export default interface BtcTransactionHelper {
     importAddress(address: string, label: string): Promise<null>;
     fundAddress(address: string, amountInBtc: number, addFee?: boolean = true): Promise<string>;
     mine(blocks: number = 1): Promise<string>;
+    getFee(): number;
+    decodeBase58Address(address: string): string;
 }

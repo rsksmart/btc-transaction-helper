@@ -248,9 +248,25 @@ class BtcTransactionHelper{
         return await this.nodeClient.mine(blocks);
     }
 
+    /**
+     * 
+     * @returns {number} txFee
+     */
     getFee() {
         return this.btcConfig.txFee;
     }
+
+    /**
+     * 
+     * @param {string} address in base58 format
+     * @returns {string} address in hex format
+     */
+    decodeBase58Address(address) {
+        const decodedAddress = bitcoin.address.fromBase58Check(address);
+        const bufferVersion = Buffer.allocUnsafe(1);
+        bufferVersion.writeUInt8(decodedAddress.version);
+        return Buffer.concat([bufferVersion, decodedAddress.hash]).toString('hex');
+    };
 
 }
 
