@@ -1,5 +1,6 @@
 const BtcTransactionHelper = require('../btc-transaction-helper');
 const config = require('./config');
+const util = require('util');
 
 const printP2PKHTransferHash = async () => {
 
@@ -8,6 +9,7 @@ const printP2PKHTransferHash = async () => {
 
     const btcTransactionHelper = new BtcTransactionHelper(config);
     const sender = await btcTransactionHelper.generateBtcAddress('legacy');
+    console.log('sender: ', sender)
     const recipient = await btcTransactionHelper.generateBtcAddress('legacy');
 
     await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc + btcTransactionHelper.getFee());
@@ -76,7 +78,9 @@ const printP2SHMULTISIGTransferHash = async () => {
     const transferAmountInBtc = 3;
 
     const btcTransactionHelper = new BtcTransactionHelper(config);
-    const sender = await btcTransactionHelper.generateMultisigAddress(3, 2, 'legacy');
+    const sender = await btcTransactionHelper.generateMultisigAddress(2, 2, 'legacy');
+    //console.log('sender: ', sender)
+    console.info(util.inspect(sender, {depth: null, colors: true}));
     const recipient = await btcTransactionHelper.generateBtcAddress('legacy');
 
     await btcTransactionHelper.fundAddress(sender.address, transferAmountInBtc + btcTransactionHelper.getFee());
