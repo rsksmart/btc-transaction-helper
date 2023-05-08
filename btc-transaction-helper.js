@@ -186,7 +186,7 @@ class BtcTransactionHelper {
      * @returns {number}
      */
     async getAddressBalance(address) {
-        let utxos = await this.nodeClient.getUtxos(address);
+        const utxos = await this.getUtxos(address);
         return utxos.reduce((sum, utxo) => sum + utxo.amount, 0);
     }
 
