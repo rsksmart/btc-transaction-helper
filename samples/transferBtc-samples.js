@@ -79,7 +79,7 @@ const printP2SHMULTISIGTransferHash = async () => {
 
     const btcTransactionHelper = new BtcTransactionHelper(config);
     const sender = await btcTransactionHelper.generateMultisigAddress(2, 2, 'legacy');
-    //console.log('sender: ', sender)
+
     console.info(util.inspect(sender, {depth: null, colors: true}));
     const recipient = await btcTransactionHelper.generateBtcAddress('legacy');
 

@@ -52,14 +52,14 @@ describe('BtcTransactionHelper', () => {
 
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const nodeClient = btcTransactionHelper.nodeClient;
-        const importAddressStub = sinon.stub(nodeClient, 'execute').resolves(null);
+        const executeImportAddressStub = sinon.stub(nodeClient, 'execute').resolves(null);
         const result = await btcTransactionHelper.importAddress(TEST_BTC_ADDRESS, 'label');
 
         assert.isNull(result);
-        assert.isTrue(importAddressStub.calledOnce);
-        assert.isFalse(importAddressStub.calledWith(TEST_BTC_ADDRESS, 'label'));
+        assert.isTrue(executeImportAddressStub.calledOnce);
+        assert.isTrue(executeImportAddressStub.calledWith('importaddress', [TEST_BTC_ADDRESS, 'label']));
 
-        importAddressStub.restore();
+        executeImportAddressStub.restore();
         
     });
 
