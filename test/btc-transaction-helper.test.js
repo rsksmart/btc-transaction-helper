@@ -343,22 +343,6 @@ describe('BtcTransactionHelper', () => {
                     
     });
 
-    it('should import address', async () => {
-                                    
-        const btcTransactionHelper = new BtcTransactionHelper(config);
-
-        const importAddressStub = sinon.stub(btcTransactionHelper.nodeClient, 'execute').resolves(null);
-
-        const result = await btcTransactionHelper.importAddress(TEST_BTC_ADDRESS, 'label');
-
-        assert.isNull(result);
-
-        assert.isTrue(importAddressStub.calledWith('importaddress', [TEST_BTC_ADDRESS, 'label']));
-
-        importAddressStub.restore();
-                            
-    });
-
     it('should fund address with default mining', async () => {
                                             
         const btcTransactionHelper = new BtcTransactionHelper(config);
