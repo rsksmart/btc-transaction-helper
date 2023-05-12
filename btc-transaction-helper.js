@@ -14,7 +14,7 @@ const DEFAULT_BTC_CONFIG = {
     txFee: 0.001
 };
 
-class BtcTransactionHelper{
+class BtcTransactionHelper {
     constructor(btcConfig) {
         this.btcConfig = Object.assign({}, DEFAULT_BTC_CONFIG, btcConfig);
         this.createNodeClient();
@@ -76,6 +76,10 @@ class BtcTransactionHelper{
         for(let i = 0; i < utxos.length && accumulated < amountInBtc; i++) {
             selected.push(utxos[i]);
             accumulated += utxos[i].amount;
+        }
+
+        if(Number.isNaN(accumulated)) {
+            throw Error('Invalid balances');
         }
 
         // At this point `accumulated` should be greater than `amountInBtc`. If not, throw error.
@@ -182,7 +186,7 @@ class BtcTransactionHelper{
      * @returns {number}
      */
     async getAddressBalance(address) {
-        let utxos = await this.nodeClient.getUtxos(address);
+        const utxos = await this.getUtxos(address);
         return utxos.reduce((sum, utxo) => sum + utxo.amount, 0);
     }
 

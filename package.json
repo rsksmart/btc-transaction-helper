@@ -10,7 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "bitcoin": "^3.0.1",
-    "bitcoinjs-lib": "^5.1.10"
+    "bitcoinjs-lib": "^5.1.10",
+    "chai-as-promised": "^7.1.1",
+    "rewire": "^6.0.0",
+    "sinon": "^15.0.4"
   },
   "devDependencies": {
     "chai": "^4.3.7",
