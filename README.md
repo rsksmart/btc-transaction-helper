@@ -1,3 +1,5 @@
+![Github CI/CD](https://github.com/rsksmart/btc-transaction-helper/actions/workflows/workflow.yml/badge.svg)
+
 # btc-transaction-helper
 
 Utility library to generate BTC addresses (legacy, segwit and multisig) and its BTC private key and execute transfers.
