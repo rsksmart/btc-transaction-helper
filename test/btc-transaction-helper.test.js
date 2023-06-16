@@ -17,6 +17,8 @@ const ADDRESS_INFORMATION = {
     privateKey: PRIVATE_KEY
 };
 
+const SAMPLE_BTC_TRANSACTIONS = require("./sample-btc-transactions.json");
+
 const MULTISIG_ADDRESS_INFORMATION = {
     address: '2N7pXoMCZjvbCJmo51t9WDrR7gR6k9VjZod',
     info: {
@@ -428,6 +430,39 @@ describe('BtcTransactionHelper', () => {
 
         assert.equal(result, '6fbba2e52eae9579b7605d9988d2ebe5bc306251ad');
     
+    });
+
+    it('should parse btc raw transaction', async () => {
+        for (let i = 0; i < SAMPLE_BTC_TRANSACTIONS.length; i++) {
+            // Arrange
+            const btcTransaction = SAMPLE_BTC_TRANSACTIONS[i];
+            const btcTransactionHelper = new BtcTransactionHelper(config);
+            const parsedBtcTransactionStub = sinon.stub(btcTransactionHelper, 'parseRawTransaction').resolves(btcTransaction.decodedTx);
+            // Act
+            const result = await btcTransactionHelper.parseRawTransaction(btcTransaction.rawTx);
+            // Assert
+            assert.isTrue(parsedBtcTransactionStub.calledWith(btcTransaction.rawTx));
+            assert.equal(result.txid, btcTransaction.decodedTx.txid);
+            assert.equal(result.hash, btcTransaction.decodedTx.hash);
+            assert.equal(JSON.stringify(result), JSON.stringify(btcTransaction.decodedTx));
+
+            parsedBtcTransactionStub.restore();
+        }
+    });
+
+    it('should failed parsing malformed btc raw transaction', async () => {
+        // Arrange
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const decodeError = new Error("Error: TX decode failed");
+        decodeError.code = -22;
+        sinon.stub(btcTransactionHelper, 'parseRawTransaction').throws(decodeError);
+
+        try {
+            await btcTransactionHelper.parseRawTransaction("MALFORMED BTC TRANSACTION")
+        } catch (err) {
+            assert.strictEqual(err.code, decodeError.code);
+            assert.strictEqual(err.message, decodeError.message);
+        }
     });
 
 });

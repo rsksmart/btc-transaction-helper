@@ -272,6 +272,14 @@ class BtcTransactionHelper {
         return Buffer.concat([bufferVersion, decodedAddress.hash]).toString('hex');
     };
 
+    /**
+     *
+     * @param {string} rawTransaction string in hex to be parsed into an object
+     * @return {BtcTransaction}
+     */
+    async parseRawTransaction(rawTransaction) {
+        return await this.nodeClient.parseRawTransaction(rawTransaction)
+    }
 }
 
 module.exports = BtcTransactionHelper;
