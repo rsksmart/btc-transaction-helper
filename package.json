@@ -1,6 +1,6 @@
 {
   "name": "btc-transaction-helper",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "Utility library to interact with a bitcoin node and manage a bitcoin wallet",
   "main": "index.js",
   "scripts": {

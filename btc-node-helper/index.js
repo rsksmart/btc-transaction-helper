@@ -111,4 +111,8 @@ module.exports = class BtcNodeHelper {
     satoshisToBtc(satoshi) {
         return parseFloat(satoshi / 1e8);
     }
+
+    parseRawTransaction(rawTransaction) {
+        return promisefy(this.client, this.client.decodeRawTransaction, [rawTransaction]);
+    }
 };
