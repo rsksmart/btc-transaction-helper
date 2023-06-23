@@ -263,14 +263,19 @@ class BtcTransactionHelper {
     /**
      * 
      * @param {string} address in base58 format
+     * @param {boolean} withVersion if false, the version byte will not be included in the returned address. Defaults to true.
      * @returns {string} address in hex format
      */
-    decodeBase58Address(address) {
+    decodeBase58Address(address, withVersion = true) {
         const decodedAddress = bitcoin.address.fromBase58Check(address);
-        const bufferVersion = Buffer.allocUnsafe(1);
-        bufferVersion.writeUInt8(decodedAddress.version);
-        return Buffer.concat([bufferVersion, decodedAddress.hash]).toString('hex');
+        if (!withVersion) {
+            return decodedAddress.hash.toString('hex');
+        }
+        const versionByte = Buffer.alloc(1);
+        versionByte.writeUInt8(decodedAddress.version);
+        return Buffer.concat([versionByte, decodedAddress.hash]).toString('hex');
     };
+
 
     /**
      *
