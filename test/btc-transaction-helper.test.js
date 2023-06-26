@@ -432,6 +432,16 @@ describe('BtcTransactionHelper', () => {
     
     });
 
+    it('should decode base 58 address without version', async () => {
+                                                    
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+
+        const result = btcTransactionHelper.decodeBase58Address(TEST_BTC_ADDRESS, false);
+
+        assert.equal(result, 'bba2e52eae9579b7605d9988d2ebe5bc306251ad');
+    
+    });
+
     it('should parse btc raw transaction', async () => {
         for (let i = 0; i < SAMPLE_BTC_TRANSACTIONS.length; i++) {
             // Arrange
