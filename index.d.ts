@@ -40,7 +40,7 @@ export default interface BtcTransactionHelper {
     getOutputAddress(outputScript: Buffer): string;
     getTransaction(txHash: string): Promise<Transaction>;
     importAddress(address: string, label: string): Promise<null>;
-    fundAddress(address: string, amountInBtc: number, addFee?: boolean = true): Promise<string>;
+    fundAddress(address: string, amountInBtc: number, mineBlock?: boolean = true): Promise<string>;
     mine(blocks: number = 1): Promise<string>;
     getFee(): number;
     decodeBase58Address(address: string): string;
