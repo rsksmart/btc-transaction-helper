@@ -115,4 +115,9 @@ module.exports = class BtcNodeHelper {
     parseRawTransaction(rawTransaction) {
         return promisefy(this.client, this.client.decodeRawTransaction, [rawTransaction]);
     }
+
+    getLatestBlockNumber() {
+        return promisefy(this.client, this.client.getBlockCount, []);
+    }
+
 };
