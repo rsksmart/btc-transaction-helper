@@ -292,7 +292,7 @@ class BtcTransactionHelper {
      *
      */
     async getLatestBlockNumber() {
-        return await this.nodeClient.getLatestBlockNumber();
+        return await this.nodeClient.getBlockCount();
     }
 
 }

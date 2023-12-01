@@ -44,4 +44,5 @@ export default interface BtcTransactionHelper {
     mine(blocks: number = 1): Promise<string>;
     getFee(): number;
     decodeBase58Address(address: string): string;
+    getLatestBlockNumber(): Promise<number>;
 }

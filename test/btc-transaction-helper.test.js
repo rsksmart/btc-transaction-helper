@@ -475,4 +475,15 @@ describe('BtcTransactionHelper', () => {
         }
     });
 
+    it('should get latest block number', async () => {
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const nodeClient = btcTransactionHelper.nodeClient;
+        const getBlockCountStub = sinon.stub(nodeClient, 'getBlockCount').resolves(100);
+        const result = await btcTransactionHelper.getLatestBlockNumber();
+
+        assert.equal(result, 100);
+
+        getBlockCountStub.restore();
+    });
+
 });
