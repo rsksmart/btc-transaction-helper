@@ -285,6 +285,16 @@ class BtcTransactionHelper {
     async parseRawTransaction(rawTransaction) {
         return await this.nodeClient.parseRawTransaction(rawTransaction)
     }
+
+    /**
+     * 
+     * @returns {number} latestBlockNumber
+     *
+     */
+    async getLatestBlockNumber() {
+        return await this.nodeClient.getBlockCount();
+    }
+
 }
 
 module.exports = BtcTransactionHelper;
