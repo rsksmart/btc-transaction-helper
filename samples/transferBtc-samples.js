@@ -301,6 +301,16 @@ const printP2PKHTransferHashWithNotEnoughForFees = async () => {
 
 };
 
+const printBlockHeader = async () => {
+    const btcTransactionHelper = new BtcTransactionHelper(config);
+    const blockHashes = await btcTransactionHelper.mine()
+    console.log('blockHashes:', blockHashes)
+    const block = await btcTransactionHelper.nodeClient.getBlock(blockHashes[0])
+    console.log('block:', block)
+    const blockHeader = await btcTransactionHelper.nodeClient.getBlockHeader(blockHashes[0])
+    console.log('blockHeader:', blockHeader)
+}
+
 (async() => {
     await printP2PKHTransferHash();
     await printP2PKHTransferHashWithDecimalAmountInBtc();
@@ -314,4 +324,5 @@ const printP2PKHTransferHashWithNotEnoughForFees = async () => {
     await printP2PKHTransferHashWith0Change();
     await printP2PKHTransferHashWithChange();
     await printP2PKHTransferHashWithNotEnoughForFees();
+    await printBlockHeader()
 })();

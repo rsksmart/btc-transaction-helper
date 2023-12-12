@@ -486,4 +486,30 @@ describe('BtcTransactionHelper', () => {
         getBlockCountStub.restore();
     });
 
+    it('should get block header', async () => {
+        const blockHeader = {
+            hash: '720051c391d1c162c995d645044e63bbe953555c9b28a8fbd5e624c7224d13a3',
+            confirmations: 206,
+            height: 600,
+            version: 536870912,
+            versionHex: '20000000',
+            merkleroot: '08de262399541132fc020124331682bb07f289b47025e5208eb2ca8639826bfc',
+            time: 1702060641,
+            mediantime: 1702060640,
+            nonce: 0,
+            bits: '207fffff',
+            difficulty: 4.656542373906925e-10,
+            chainwork: '00000000000000000000000000000000000000000000000000000000000004b2',
+            nTx: 1,
+            previousblockhash: '6bdc887e9310d152d936f1dc94cae69b4b60b393bfdc91471b21f4d38a4644f4',
+            nextblockhash: '0f7c230fc7326ddfa02e634a7165047d429db118ce60c74fb6428d079e0eedec'
+        }
+        
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const getBlockHeaderStub = sinon.stub(btcTransactionHelper.nodeClient, 'getBlockHeader');
+        getBlockHeaderStub.resolves(blockHeader);
+        const result = await btcTransactionHelper.getBlockHeader(blockHeader.hash);
+        assert.deepEqual(result, blockHeader);
+        getBlockHeaderStub.restore();
+    })
 });
