@@ -301,9 +301,9 @@ class BtcTransactionHelper {
      * @param {boolean} jsonEncoded defaults to true. If false, the block header will be returned as a hex string.
      * @returns {BlockHeader | string} blockHeader
      */
-    getBlockHeader(blockHash, jsonEncoded = false) {
+    getBlockHeader(blockHash, jsonEncoded = true) {
         return this.nodeClient.getBlockHeader(blockHash, jsonEncoded);
-    };
+    }
 
 }
 

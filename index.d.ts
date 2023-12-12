@@ -63,5 +63,5 @@ export default interface BtcTransactionHelper {
     getFee(): number;
     decodeBase58Address(address: string): string;
     getLatestBlockNumber(): Promise<number>;
-    getBlockHeader(blockHash: string, jsonEncoded: boolen = true): BlockHeader;
+    getBlockHeader(blockHash: string, jsonEncoded: boolean = true): Promise<BlockHeader | string>;
 }

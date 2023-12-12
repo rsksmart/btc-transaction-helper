@@ -117,9 +117,6 @@ module.exports = class BtcNodeHelper {
     }
 
     getBlockHeader(blockHash, jsonEncoded = true) {
-        if (!blockHash) {
-            throw new Error('Block hash is required');
-        }
         return this.execute('getblockheader', [blockHash, jsonEncoded]);
     };
 
