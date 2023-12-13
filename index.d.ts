@@ -48,6 +48,35 @@ enum AddressType {
     p2shSegwit = 'p2sh-segwit',
     p2shSegwit = 'p2sh-segwit',
 }
+
+export interface MempoolTransaction {
+    fees: {
+        base: number,
+        modified: number,
+        ancestor: number,
+        descendant: number
+    },
+    size: number,
+    fee: number,
+    modifiedfee: number,
+    time: number,
+    height: number,
+    descendantcount: number,
+    descendantsize: number,
+    descendantfees: number,
+    ancestorcount: number,
+    ancestorsize: number,
+    ancestorfees: number,
+    wtxid: string,
+    depends: [],
+    spentby: [],
+    'bip125-replaceable': boolean
+}
+
+export interface MempoolTransactions {
+    [txId: string]: MempoolTransaction
+}
+
 export default interface BtcTransactionHelper {
     generateBtcAddress(type: AddressType): Promise<AddressInformation>;
     generateMultisigAddress(signerSize: number, requiredSigners: number, type: AddressType): Promise<MultisigAddressInformation>;
@@ -64,4 +93,5 @@ export default interface BtcTransactionHelper {
     decodeBase58Address(address: string): string;
     getLatestBlockNumber(): Promise<number>;
     getBlockHeader(blockHash: string, jsonEncoded: boolean = true): Promise<BlockHeader | string>;
+    getTransactionsInMempool(verbose: boolean = false): Promise<string[] | MempoolTransactions>;
 }

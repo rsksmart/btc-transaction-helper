@@ -66,6 +66,58 @@ const blockHeader = {
     nextblockhash: '0f7c230fc7326ddfa02e634a7165047d429db118ce60c74fb6428d079e0eedec'
 };
 
+const txId1 = '0e4f5d33e75bbc483156548e654d780b636f003d35e63a1a0324685a56ecd05a';
+const txId2 = '8dcce65becbcdaaff4605c7dd285a6c9a26fbe9d92e6f50aaa1c46785e14e963';
+
+const transactionsInMempoolVerbose =  {
+    '0e4f5d33e75bbc483156548e654d780b636f003d35e63a1a0324685a56ecd05a': {
+      fees: {
+        base: 0.0000744,
+        modified: 0.0000744,
+        ancestor: 0.0000744,
+        descendant: 0.0000744
+      },
+      size: 372,
+      fee: 0.0000744,
+      modifiedfee: 0.0000744,
+      time: 1702491432,
+      height: 821,
+      descendantcount: 1,
+      descendantsize: 372,
+      descendantfees: 7440,
+      ancestorcount: 1,
+      ancestorsize: 372,
+      ancestorfees: 7440,
+      wtxid: '0e4f5d33e75bbc483156548e654d780b636f003d35e63a1a0324685a56ecd05a',
+      depends: [],
+      spentby: [],
+      'bip125-replaceable': false
+    },
+    '8dcce65becbcdaaff4605c7dd285a6c9a26fbe9d92e6f50aaa1c46785e14e963': {
+      fees: {
+        base: 0.0000744,
+        modified: 0.0000744,
+        ancestor: 0.0000744,
+        descendant: 0.0000744
+      },
+      size: 372,
+      fee: 0.0000744,
+      modifiedfee: 0.0000744,
+      time: 1702491430,
+      height: 821,
+      descendantcount: 1,
+      descendantsize: 372,
+      descendantfees: 7440,
+      ancestorcount: 1,
+      ancestorsize: 372,
+      ancestorfees: 7440,
+      wtxid: '8dcce65becbcdaaff4605c7dd285a6c9a26fbe9d92e6f50aaa1c46785e14e963',
+      depends: [],
+      spentby: [],
+      'bip125-replaceable': false
+    }
+};
+
 describe('BtcTransactionHelper', () => {
 
     it('should import address', async () => {
@@ -534,6 +586,36 @@ describe('BtcTransactionHelper', () => {
         assert.isTrue(getBlockHeaderStub.calledWith(blockHash, false));
         assert.equal(actualBlockHeaderHex, blockHeaderHex);
         getBlockHeaderStub.restore();
+    });
+
+    it('should get transactions in mempool, with verbose default false', async () => {
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const getTransactionsInMempoolStub = sinon.stub(btcTransactionHelper.nodeClient, 'getTransactionsInMempool');
+        getTransactionsInMempoolStub.resolves([txId1, txId2]);
+        const actualTransactionsInMempool = await btcTransactionHelper.getTransactionsInMempool();
+        assert.isTrue(getTransactionsInMempoolStub.calledWith(false));
+        assert.deepEqual(actualTransactionsInMempool, [txId1, txId2]);
+        getTransactionsInMempoolStub.restore();
+    });
+
+    it('should get transactions in mempool with verbose', async () => {
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const getTransactionsInMempoolStub = sinon.stub(btcTransactionHelper.nodeClient, 'getTransactionsInMempool');
+        getTransactionsInMempoolStub.resolves(transactionsInMempoolVerbose);
+        const actualTransactionsInMempool = await btcTransactionHelper.getTransactionsInMempool(true);
+        assert.isTrue(getTransactionsInMempoolStub.calledWith(true));
+        assert.deepEqual(actualTransactionsInMempool, transactionsInMempoolVerbose);
+        getTransactionsInMempoolStub.restore();
+    });
+
+    it('should get transactions in mempool with verbose manually set to false', async () => {
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const getTransactionsInMempoolStub = sinon.stub(btcTransactionHelper.nodeClient, 'getTransactionsInMempool');
+        getTransactionsInMempoolStub.resolves([txId1, txId2]);
+        const actualTransactionsInMempool = await btcTransactionHelper.getTransactionsInMempool(false);
+        assert.isTrue(getTransactionsInMempoolStub.calledWith(false));
+        assert.deepEqual(actualTransactionsInMempool, [txId1, txId2]);
+        getTransactionsInMempoolStub.restore();
     });
 
 });

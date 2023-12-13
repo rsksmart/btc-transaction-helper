@@ -305,6 +305,15 @@ class BtcTransactionHelper {
         return this.nodeClient.getBlockHeader(blockHash, jsonEncoded);
     }
 
+    /**
+     * 
+     * @param {boolean} verbose defaults to false. If true, returns an object with the transaction details. If false, returns an array of transaction ids (hashes).
+     * @returns {Promise<string[] | MempoolTransactions>}
+     */
+    getTransactionsInMempool(verbose = false) {
+        return this.nodeClient.getTransactionsInMempool(verbose);
+    }
+
 }
 
 module.exports = BtcTransactionHelper;

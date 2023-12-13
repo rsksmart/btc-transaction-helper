@@ -120,4 +120,8 @@ module.exports = class BtcNodeHelper {
         return this.execute('getblockheader', [blockHash, jsonEncoded]);
     };
 
+    getTransactionsInMempool(verbose = false) {
+        return this.execute('getrawmempool', [verbose]);
+    }
+
 };
