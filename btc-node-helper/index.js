@@ -116,4 +116,8 @@ module.exports = class BtcNodeHelper {
         return promisefy(this.client, this.client.decodeRawTransaction, [rawTransaction]);
     }
 
+    getBlockHeader(blockHash, jsonEncoded = true) {
+        return this.execute('getblockheader', [blockHash, jsonEncoded]);
+    };
+
 };

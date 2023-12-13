@@ -295,6 +295,16 @@ class BtcTransactionHelper {
         return await this.nodeClient.getBlockCount();
     }
 
+    /**
+     * 
+     * @param {string} blockHash 
+     * @param {boolean} jsonEncoded defaults to true. If false, the block header will be returned as a hex string.
+     * @returns {BlockHeader | string} blockHeader
+     */
+    getBlockHeader(blockHash, jsonEncoded = true) {
+        return this.nodeClient.getBlockHeader(blockHash, jsonEncoded);
+    }
+
 }
 
 module.exports = BtcTransactionHelper;

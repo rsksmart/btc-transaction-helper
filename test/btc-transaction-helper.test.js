@@ -48,6 +48,24 @@ const utxos = [
     }
 ];
 
+const blockHeader = {
+    hash: '720051c391d1c162c995d645044e63bbe953555c9b28a8fbd5e624c7224d13a3',
+    confirmations: 206,
+    height: 600,
+    version: 536870912,
+    versionHex: '20000000',
+    merkleroot: '08de262399541132fc020124331682bb07f289b47025e5208eb2ca8639826bfc',
+    time: 1702060641,
+    mediantime: 1702060640,
+    nonce: 0,
+    bits: '207fffff',
+    difficulty: 4.656542373906925e-10,
+    chainwork: '00000000000000000000000000000000000000000000000000000000000004b2',
+    nTx: 1,
+    previousblockhash: '6bdc887e9310d152d936f1dc94cae69b4b60b393bfdc91471b21f4d38a4644f4',
+    nextblockhash: '0f7c230fc7326ddfa02e634a7165047d429db118ce60c74fb6428d079e0eedec'
+};
+
 describe('BtcTransactionHelper', () => {
 
     it('should import address', async () => {
@@ -484,6 +502,38 @@ describe('BtcTransactionHelper', () => {
         assert.equal(result, 100);
 
         getBlockCountStub.restore();
+    });
+
+    it('should get block header, with jsonEncoded param true by default', async () => {
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const getBlockHeaderStub = sinon.stub(btcTransactionHelper.nodeClient, 'getBlockHeader');
+        getBlockHeaderStub.resolves(blockHeader);
+        const actualBlockHeader = await btcTransactionHelper.getBlockHeader(blockHeader.hash);
+        assert.isTrue(getBlockHeaderStub.calledWith(blockHeader.hash, true));
+        assert.deepEqual(actualBlockHeader, blockHeader);
+        getBlockHeaderStub.restore();
+    });
+
+    it('should get block header, with jsonEncoded set manually to true', async () => {
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const getBlockHeaderStub = sinon.stub(btcTransactionHelper.nodeClient, 'getBlockHeader');
+        getBlockHeaderStub.resolves(blockHeader);
+        const actualBlockHeader = await btcTransactionHelper.getBlockHeader(blockHeader.hash, true);
+        assert.isTrue(getBlockHeaderStub.calledWith(blockHeader.hash, true));
+        assert.deepEqual(actualBlockHeader, blockHeader);
+        getBlockHeaderStub.restore();
+    });
+
+    it('should get block header as hex when jsonEncoded param is passed as false', async () => {
+        const blockHash = '720051c391d1c162c995d645044e63bbe953555c9b28a8fbd5e624c7224d13a3';
+        const blockHeaderHex = '00000020e23f0060e4adccf6f36da74b7d49ddb41c558da75fa1ded9f6c6dae96b6d3c5aa74ee5e800fa6184aed8464eec15448de8a0ed14c3b0e2983cac13632f19637f2ba57865ffff7f2000000000';
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const getBlockHeaderStub = sinon.stub(btcTransactionHelper.nodeClient, 'getBlockHeader');
+        getBlockHeaderStub.resolves(blockHeaderHex);
+        const actualBlockHeaderHex = await btcTransactionHelper.getBlockHeader(blockHash, false);
+        assert.isTrue(getBlockHeaderStub.calledWith(blockHash, false));
+        assert.equal(actualBlockHeaderHex, blockHeaderHex);
+        getBlockHeaderStub.restore();
     });
 
 });

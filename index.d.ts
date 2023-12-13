@@ -25,6 +25,24 @@ export interface RecipientTransferInformation {
     amountInBtc: number;
 }
 
+export interface BlockHeader {
+        hash: string,
+        confirmations: number,
+        height: number,
+        version: number,
+        versionHex: string,
+        merkleroot: string,
+        time: number,
+        mediantime: number,
+        nonce: number,
+        bits: string,
+        difficulty: number,
+        chainwork: string,
+        nTx: number,
+        previousblockhash: string,
+        nextblockhash: string
+}
+
 enum AddressType {
     legacy = 'legacy',
     p2shSegwit = 'p2sh-segwit',
@@ -41,8 +59,9 @@ export default interface BtcTransactionHelper {
     getTransaction(txHash: string): Promise<Transaction>;
     importAddress(address: string, label: string): Promise<null>;
     fundAddress(address: string, amountInBtc: number, mineBlock?: boolean = true): Promise<string>;
-    mine(blocks: number = 1): Promise<string>;
+    mine(blocks: number = 1): Promise<string[]>;
     getFee(): number;
     decodeBase58Address(address: string): string;
     getLatestBlockNumber(): Promise<number>;
+    getBlockHeader(blockHash: string, jsonEncoded: boolean = true): Promise<BlockHeader | string>;
 }
