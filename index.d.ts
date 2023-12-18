@@ -1,6 +1,4 @@
-import { number } from "bitcoinjs-lib/types/script";
-
-export { TxOutput, Transaction } from "bitcoinjs-lib";
+export { TxOutput, Transaction, Network } from "bitcoinjs-lib";
 
 export interface AddressInformation {
     address: string;
@@ -89,7 +87,7 @@ type BtcTransactionHelperConfig = {
     txFee?: number;
 }
 
-export default class BtcTransactionHelper {
+export class BtcTransactionHelper {
     constructor(config: BtcTransactionHelperConfig);
     generateBtcAddress(type: AddressType): Promise<AddressInformation>;
     generateMultisigAddress(signerSize: number, requiredSigners: number, type: AddressType): Promise<MultisigAddressInformation>;
@@ -108,3 +106,11 @@ export default class BtcTransactionHelper {
     getBlockHeader(blockHash: string, jsonEncoded: boolean = true): Promise<BlockHeader | string>;
     getTransactionsInMempool(verbose: boolean = false): Promise<string[] | MempoolTransactions>;
 }
+
+export class BtcTransactionHelperException {
+    stack: string;
+    constructor(message: string, error: Error);
+}
+
+export const btcToSatoshis = (amount: number) => number;
+export const satoshisToBtc = (amount: amount) => number;
