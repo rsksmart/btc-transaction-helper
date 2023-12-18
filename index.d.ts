@@ -1,3 +1,5 @@
+import { number } from "bitcoinjs-lib/types/script";
+
 export { TxOutput, Transaction } from "bitcoinjs-lib";
 
 export interface AddressInformation {
@@ -77,7 +79,18 @@ export interface MempoolTransactions {
     [txId: string]: MempoolTransaction
 }
 
+type BtcTransactionHelperConfig = {
+    host: string;
+    port: number;
+    user: string;
+    pass: string;
+    network: string;
+    timeout: number;
+    txFee: number;
+}
+
 export default class BtcTransactionHelper {
+    constructor(config: BtcTransactionHelperConfig);
     generateBtcAddress(type: AddressType): Promise<AddressInformation>;
     generateMultisigAddress(signerSize: number, requiredSigners: number, type: AddressType): Promise<MultisigAddressInformation>;
     selectSpendableUTXOsFromAddress(address: string, amountInBtc: number): Promise<SpendableUtxosInformation>;
