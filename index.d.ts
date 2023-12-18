@@ -80,13 +80,13 @@ export interface MempoolTransactions {
 }
 
 type BtcTransactionHelperConfig = {
-    host: string;
-    port: number;
-    user: string;
-    pass: string;
-    network: string;
-    timeout: number;
-    txFee: number;
+    host?: string;
+    port?: number;
+    user?: string;
+    pass?: string;
+    network?: string;
+    timeout?: number;
+    txFee?: number;
 }
 
 export default class BtcTransactionHelper {
