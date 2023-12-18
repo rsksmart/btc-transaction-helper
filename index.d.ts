@@ -77,7 +77,7 @@ export interface MempoolTransactions {
     [txId: string]: MempoolTransaction
 }
 
-export default interface BtcTransactionHelper {
+export default class BtcTransactionHelper {
     generateBtcAddress(type: AddressType): Promise<AddressInformation>;
     generateMultisigAddress(signerSize: number, requiredSigners: number, type: AddressType): Promise<MultisigAddressInformation>;
     selectSpendableUTXOsFromAddress(address: string, amountInBtc: number): Promise<SpendableUtxosInformation>;
