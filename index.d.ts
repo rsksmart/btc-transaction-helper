@@ -1,4 +1,4 @@
-export { TxOutput, Transaction } from "bitcoinjs-lib";
+export { TxOutput, Transaction, Network } from "bitcoinjs-lib";
 
 export interface AddressInformation {
     address: string;
@@ -77,7 +77,18 @@ export interface MempoolTransactions {
     [txId: string]: MempoolTransaction
 }
 
-export default interface BtcTransactionHelper {
+type BtcTransactionHelperConfig = {
+    host?: string;
+    port?: number;
+    user?: string;
+    pass?: string;
+    network?: string;
+    timeout?: number;
+    txFee?: number;
+}
+
+export class BtcTransactionHelper {
+    constructor(config: BtcTransactionHelperConfig);
     generateBtcAddress(type: AddressType): Promise<AddressInformation>;
     generateMultisigAddress(signerSize: number, requiredSigners: number, type: AddressType): Promise<MultisigAddressInformation>;
     selectSpendableUTXOsFromAddress(address: string, amountInBtc: number): Promise<SpendableUtxosInformation>;
@@ -95,3 +106,11 @@ export default interface BtcTransactionHelper {
     getBlockHeader(blockHash: string, jsonEncoded: boolean = true): Promise<BlockHeader | string>;
     getTransactionsInMempool(verbose: boolean = false): Promise<string[] | MempoolTransactions>;
 }
+
+export class BtcTransactionHelperException {
+    stack: string;
+    constructor(message: string, error: Error);
+}
+
+export const btcToSatoshis = (amount: number) => number;
+export const satoshisToBtc = (amount: amount) => number;
