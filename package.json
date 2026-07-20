@@ -1,10 +1,12 @@
 {
-  "name": "btc-transaction-helper",
-  "version": "3.5.0",
+  "name": "@rsksmart/btc-transaction-helper",
+  "version": "4.0.0",
   "description": "Utility library to interact with a bitcoin node and manage a bitcoin wallet",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "lint": "eslint . && npx prettier --check .",
+    "lint:fix": "eslint . --fix && npx prettier --write ."
   },
   "author": "",
   "license": "ISC",
@@ -16,7 +18,14 @@
     "sinon": "^15.0.4"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "chai": "^4.3.7",
-    "mocha": "^10.2.0"
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-chai-friendly": "^1.2.1",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^17.7.0",
+    "mocha": "^10.2.0",
+    "prettier": "^3.9.5"
   }
 }

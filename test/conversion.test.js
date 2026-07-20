@@ -3,9 +3,7 @@ const { assert } = require('chai');
 const conversion = require('../index').conversion;
 
 describe('conversion', () => {
-
     it('should convert btc to satoshis', () => {
-
         assert.equal(conversion.btcToSatoshis(1), 100_000_000);
 
         assert.equal(conversion.btcToSatoshis(100), 10_000_000_000);
@@ -22,11 +20,9 @@ describe('conversion', () => {
         assert.equal(conversion.btcToSatoshis(0.00000003), 3);
 
         assert.equal(conversion.btcToSatoshis(-5), -500_000_000);
-        
     });
 
     it('should convert satoshis to btc', () => {
-
         assert.equal(conversion.satoshisToBtc(100_000_000), 1);
 
         assert.equal(conversion.satoshisToBtc(10_000_000_000), 100);
@@ -42,7 +38,5 @@ describe('conversion', () => {
         assert.equal(conversion.satoshisToBtc(3), 0.00000003);
 
         assert.equal(conversion.satoshisToBtc(-500_000_000), -5);
-
     });
-
 });
