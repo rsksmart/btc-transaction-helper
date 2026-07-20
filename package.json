@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "bitcoin": "3.0.3",
-    "bitcoinjs-lib": "6.1.7",
+    "bitcoinjs-lib": "7.0.1",
     "ecpair": "2.1.0",
     "tiny-secp256k1": "2.2.4"
   },
