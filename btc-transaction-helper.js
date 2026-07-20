@@ -324,7 +324,7 @@ class BtcTransactionHelper {
      * @param {string} walletName defaults to 'default'
      * @returns {{name: string, warning: string}} result
      */
-    async createWallet(walletName) {
+    async createWallet(walletName = 'default') {
         try {
             return await this.nodeClient.createWallet(walletName);
         } catch (err) {

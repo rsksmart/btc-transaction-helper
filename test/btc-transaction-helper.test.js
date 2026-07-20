@@ -667,7 +667,7 @@ describe('BtcTransactionHelper', () => {
 
         const result = await btcTransactionHelper.createWallet();
 
-        assert.isTrue(createWalletStub.calledWith(undefined));
+        assert.isTrue(createWalletStub.calledWith('default'));
         assert.equal(result.name, 'default');
 
         createWalletStub.restore();
