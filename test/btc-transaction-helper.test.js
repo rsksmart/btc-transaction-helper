@@ -17,34 +17,35 @@ const ADDRESS_INFORMATION = {
     privateKey: PRIVATE_KEY
 };
 
-const SAMPLE_BTC_TRANSACTIONS = require("./sample-btc-transactions.json");
+const SAMPLE_BTC_TRANSACTIONS = require('./sample-btc-transactions.json');
 
 const MULTISIG_ADDRESS_INFORMATION = {
     address: '2N7pXoMCZjvbCJmo51t9WDrR7gR6k9VjZod',
     info: {
-      members: [
-        {
-          address: 'mt3rLTFHEW9YwSoUFcQFK8FzvEZhtyxSpx',
-          privateKey: 'cPXuhqdZVBpCfsvFM55hEpqTkmUi3K6GpPKREboHjhfh5MGRMmqp'
-        },
-        {
-          address: 'mpvR1XSmGW11WBwNYDmGZVbWFMEVRoCkAb',
-          privateKey: 'cTVq2Kg2PYEBTEb9ppVSwJ1P8xd8Uo5mancEX3FG9o4i727dthKu'
-        }
-      ],
-      redeemScript: '522103ebff0e5dc444e25c72d199e3f2ba22bfef8124bb7a00ba813d691300be2d6c4521031e35f8641a77b5388e3deb31ae6321059231c3bda238405e0d3667668ff8cb8d52ae'
+        members: [
+            {
+                address: 'mt3rLTFHEW9YwSoUFcQFK8FzvEZhtyxSpx',
+                privateKey: 'cPXuhqdZVBpCfsvFM55hEpqTkmUi3K6GpPKREboHjhfh5MGRMmqp'
+            },
+            {
+                address: 'mpvR1XSmGW11WBwNYDmGZVbWFMEVRoCkAb',
+                privateKey: 'cTVq2Kg2PYEBTEb9ppVSwJ1P8xd8Uo5mancEX3FG9o4i727dthKu'
+            }
+        ],
+        redeemScript:
+            '522103ebff0e5dc444e25c72d199e3f2ba22bfef8124bb7a00ba813d691300be2d6c4521031e35f8641a77b5388e3deb31ae6321059231c3bda238405e0d3667668ff8cb8d52ae'
     }
 };
 
 const utxos = [
     {
-        amount: 1000,
+        amount: 1000
     },
     {
-        amount: 2000,
+        amount: 2000
     },
     {
-        amount: 3000,
+        amount: 3000
     }
 ];
 
@@ -69,85 +70,83 @@ const blockHeader = {
 const txId1 = '0e4f5d33e75bbc483156548e654d780b636f003d35e63a1a0324685a56ecd05a';
 const txId2 = '8dcce65becbcdaaff4605c7dd285a6c9a26fbe9d92e6f50aaa1c46785e14e963';
 
-const transactionsInMempoolVerbose =  {
+const transactionsInMempoolVerbose = {
     '0e4f5d33e75bbc483156548e654d780b636f003d35e63a1a0324685a56ecd05a': {
-      fees: {
-        base: 0.0000744,
-        modified: 0.0000744,
-        ancestor: 0.0000744,
-        descendant: 0.0000744
-      },
-      size: 372,
-      fee: 0.0000744,
-      modifiedfee: 0.0000744,
-      time: 1702491432,
-      height: 821,
-      descendantcount: 1,
-      descendantsize: 372,
-      descendantfees: 7440,
-      ancestorcount: 1,
-      ancestorsize: 372,
-      ancestorfees: 7440,
-      wtxid: '0e4f5d33e75bbc483156548e654d780b636f003d35e63a1a0324685a56ecd05a',
-      depends: [],
-      spentby: [],
-      'bip125-replaceable': false
+        fees: {
+            base: 0.0000744,
+            modified: 0.0000744,
+            ancestor: 0.0000744,
+            descendant: 0.0000744
+        },
+        size: 372,
+        fee: 0.0000744,
+        modifiedfee: 0.0000744,
+        time: 1702491432,
+        height: 821,
+        descendantcount: 1,
+        descendantsize: 372,
+        descendantfees: 7440,
+        ancestorcount: 1,
+        ancestorsize: 372,
+        ancestorfees: 7440,
+        wtxid: '0e4f5d33e75bbc483156548e654d780b636f003d35e63a1a0324685a56ecd05a',
+        depends: [],
+        spentby: [],
+        'bip125-replaceable': false
     },
     '8dcce65becbcdaaff4605c7dd285a6c9a26fbe9d92e6f50aaa1c46785e14e963': {
-      fees: {
-        base: 0.0000744,
-        modified: 0.0000744,
-        ancestor: 0.0000744,
-        descendant: 0.0000744
-      },
-      size: 372,
-      fee: 0.0000744,
-      modifiedfee: 0.0000744,
-      time: 1702491430,
-      height: 821,
-      descendantcount: 1,
-      descendantsize: 372,
-      descendantfees: 7440,
-      ancestorcount: 1,
-      ancestorsize: 372,
-      ancestorfees: 7440,
-      wtxid: '8dcce65becbcdaaff4605c7dd285a6c9a26fbe9d92e6f50aaa1c46785e14e963',
-      depends: [],
-      spentby: [],
-      'bip125-replaceable': false
+        fees: {
+            base: 0.0000744,
+            modified: 0.0000744,
+            ancestor: 0.0000744,
+            descendant: 0.0000744
+        },
+        size: 372,
+        fee: 0.0000744,
+        modifiedfee: 0.0000744,
+        time: 1702491430,
+        height: 821,
+        descendantcount: 1,
+        descendantsize: 372,
+        descendantfees: 7440,
+        ancestorcount: 1,
+        ancestorsize: 372,
+        ancestorfees: 7440,
+        wtxid: '8dcce65becbcdaaff4605c7dd285a6c9a26fbe9d92e6f50aaa1c46785e14e963',
+        depends: [],
+        spentby: [],
+        'bip125-replaceable': false
     }
 };
 
 describe('BtcTransactionHelper', () => {
-
     it('should generate address information', async () => {
-
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const nodeClient = btcTransactionHelper.nodeClient;
-        const generateAddressInformationStub = sinon.stub(nodeClient, 'generateAddressInformation').resolves(ADDRESS_INFORMATION);
+        const generateAddressInformationStub = sinon
+            .stub(nodeClient, 'generateAddressInformation')
+            .resolves(ADDRESS_INFORMATION);
         const result = await btcTransactionHelper.generateBtcAddress(LEGACY);
 
         assert.equal(result, ADDRESS_INFORMATION);
 
         generateAddressInformationStub.restore();
-
     });
 
     it('should generate multisig address information', async () => {
-            
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const nodeClient = btcTransactionHelper.nodeClient;
-        const generateMultisigAddressInformationStub = sinon.stub(nodeClient, 'generateMultisigAddressInformation').resolves(MULTISIG_ADDRESS_INFORMATION);
+        const generateMultisigAddressInformationStub = sinon
+            .stub(nodeClient, 'generateMultisigAddressInformation')
+            .resolves(MULTISIG_ADDRESS_INFORMATION);
         const result = await btcTransactionHelper.generateMultisigAddress(2, 2, LEGACY);
 
         assert.equal(result, MULTISIG_ADDRESS_INFORMATION);
 
         generateMultisigAddressInformationStub.restore();
-    
     });
 
     it('should select spendable utxos from address with 1000 satoshis change', async () => {
-
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const getUtxosStub = sinon.stub(btcTransactionHelper, 'getUtxos').resolves(utxos);
         const result = await btcTransactionHelper.selectSpendableUTXOsFromAddress(TEST_BTC_ADDRESS, 2000);
@@ -158,11 +157,9 @@ describe('BtcTransactionHelper', () => {
         assert.equal(result.change, 1000);
 
         getUtxosStub.restore();
-
     });
 
     it('should select spendable utxos from address with no change', async () => {
-
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const getUtxosStub = sinon.stub(btcTransactionHelper, 'getUtxos').resolves(utxos);
         const result = await btcTransactionHelper.selectSpendableUTXOsFromAddress(TEST_BTC_ADDRESS, 1000);
@@ -172,22 +169,20 @@ describe('BtcTransactionHelper', () => {
         assert.equal(result.change, 0);
 
         getUtxosStub.restore();
-
     });
 
     it('should fail if account does not have enough funds', async () => {
-            
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const getUtxosStub = sinon.stub(btcTransactionHelper, 'getUtxos').resolves(utxos);
 
-        await expect(btcTransactionHelper.selectSpendableUTXOsFromAddress(TEST_BTC_ADDRESS, 8000)).to.eventually.be.rejectedWith(Error, 'The sender does not have enough balance to proceed with the transfer');
+        await expect(
+            btcTransactionHelper.selectSpendableUTXOsFromAddress(TEST_BTC_ADDRESS, 8000)
+        ).to.eventually.be.rejectedWith(Error, 'The sender does not have enough balance to proceed with the transfer');
 
         getUtxosStub.restore();
-    
     });
 
     it('should return utxos', async () => {
-            
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const nodeClient = btcTransactionHelper.nodeClient;
         const getUtxosStub = sinon.stub(nodeClient, 'getUtxos').resolves(utxos);
@@ -196,23 +191,21 @@ describe('BtcTransactionHelper', () => {
         assert.equal(result, utxos);
 
         getUtxosStub.restore();
-    
     });
 
     it('should transferBtc', async () => {
-                
         const btcTransactionHelper = new BtcTransactionHelper(config);
 
         const recipientAddress = 'mxAyE9QUS2PoKAsNv7h9bx2aBkvoVA68A4';
         const amountInBtc = 2000;
-        const recipientsTransactionInformation = [{recipientAddress, amountInBtc}];
+        const recipientsTransactionInformation = [{ recipientAddress, amountInBtc }];
 
         const utxos = [
             {
                 amount: 3000,
                 txid: '74f7e8c0263be8b23b3deffbaf9ee74239076a0de57c695aef4669e22bee0d01',
                 vout: 0,
-                scriptPubKey: '76a91481a2a37f24c2d7af1382cfe3f5bfa570705efc3288ac',
+                scriptPubKey: '76a91481a2a37f24c2d7af1382cfe3f5bfa570705efc3288ac'
             }
         ];
 
@@ -221,7 +214,9 @@ describe('BtcTransactionHelper', () => {
         const txHash = `0550fcfa26839e7b5defdef60cf19e1b3b25324c6998ac66a9a2ddc72b8f34e8`;
 
         const getUtxosStub = sinon.stub(btcTransactionHelper, 'getUtxos').resolves(utxos);
-        const signRawTransactionStub = sinon.stub(btcTransactionHelper.nodeClient, 'signTransaction').resolves(signedTxHex);
+        const signRawTransactionStub = sinon
+            .stub(btcTransactionHelper.nodeClient, 'signTransaction')
+            .resolves(signedTxHex);
         const sendRawTransactionStub = sinon.stub(btcTransactionHelper.nodeClient, 'sendTransaction').resolves(txHash);
 
         const result = await btcTransactionHelper.transferBtc(ADDRESS_INFORMATION, recipientsTransactionInformation);
@@ -235,11 +230,9 @@ describe('BtcTransactionHelper', () => {
         getUtxosStub.restore();
         signRawTransactionStub.restore();
         sendRawTransactionStub.restore();
-        
     });
 
     it('should transferBtc from a p2sh-segwit address providing the redeem script', async () => {
-
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const network = config.network;
 
@@ -254,14 +247,14 @@ describe('BtcTransactionHelper', () => {
         };
 
         const recipientAddress = 'mxAyE9QUS2PoKAsNv7h9bx2aBkvoVA68A4';
-        const recipientsTransactionInformation = [{recipientAddress, amountInBtc: 2000}];
+        const recipientsTransactionInformation = [{ recipientAddress, amountInBtc: 2000 }];
 
         const utxos = [
             {
                 amount: 3000,
                 txid: '74f7e8c0263be8b23b3deffbaf9ee74239076a0de57c695aef4669e22bee0d01',
                 vout: 0,
-                scriptPubKey: bitcoin.address.toOutputScript(p2shSegwit.address, network).toString('hex'),
+                scriptPubKey: bitcoin.address.toOutputScript(p2shSegwit.address, network).toString('hex')
             }
         ];
 
@@ -269,10 +262,15 @@ describe('BtcTransactionHelper', () => {
         const txHash = `0550fcfa26839e7b5defdef60cf19e1b3b25324c6998ac66a9a2ddc72b8f34e8`;
 
         const getUtxosStub = sinon.stub(btcTransactionHelper, 'getUtxos').resolves(utxos);
-        const signRawTransactionStub = sinon.stub(btcTransactionHelper.nodeClient, 'signTransaction').resolves(signedTxHex);
+        const signRawTransactionStub = sinon
+            .stub(btcTransactionHelper.nodeClient, 'signTransaction')
+            .resolves(signedTxHex);
         const sendRawTransactionStub = sinon.stub(btcTransactionHelper.nodeClient, 'sendTransaction').resolves(txHash);
 
-        const result = await btcTransactionHelper.transferBtc(senderAddressInformation, recipientsTransactionInformation);
+        const result = await btcTransactionHelper.transferBtc(
+            senderAddressInformation,
+            recipientsTransactionInformation
+        );
 
         assert.equal(result, txHash);
 
@@ -288,32 +286,31 @@ describe('BtcTransactionHelper', () => {
         getUtxosStub.restore();
         signRawTransactionStub.restore();
         sendRawTransactionStub.restore();
-
     });
 
     it('should transferBtc, multisig', async () => {
-                
         const btcTransactionHelper = new BtcTransactionHelper(config);
 
         const recipientAddress = 'mxAyE9QUS2PoKAsNv7h9bx2aBkvoVA68A4';
         const amountInBtc = 2000;
-        const recipientsTransactionInformation = [{recipientAddress, amountInBtc}];
-        const redeemScript = '5221039fac837f0c8a3f93fd63a9574677ca86bb60427149ac8c104d0f7da0be0555132103c35665b6940450ec15219634c4a85e8432bf4d89d2de265274b7b70e83d5982a52ae';
+        const recipientsTransactionInformation = [{ recipientAddress, amountInBtc }];
+        const redeemScript =
+            '5221039fac837f0c8a3f93fd63a9574677ca86bb60427149ac8c104d0f7da0be0555132103c35665b6940450ec15219634c4a85e8432bf4d89d2de265274b7b70e83d5982a52ae';
 
         const senderAddressInformation = {
             address: '2MtEkevhQZpdFH4DGHjWm68HYD8hPZgaTeH',
             info: {
-              members: [
-                {
-                  address: 'mzP29BbArPnUuAdr1uFX3ZwbDUiNEkW5HH',
-                  privateKey: 'cVGMwpMZEatVCTAz5hr4h56fvSHb2EqnxzHGCmxqXbASkBmGtZLX'
-                },
-                {
-                  address: 'mzYTf3HKxbNWFUodyMqGGc5Az7fsACQoCb',
-                  privateKey: 'cRESFZCZZ7tEJPBoKBG53WU5xALnxpDN38s9jDVtkiYdKRuSehcx'
-                }
-              ],
-              redeemScript
+                members: [
+                    {
+                        address: 'mzP29BbArPnUuAdr1uFX3ZwbDUiNEkW5HH',
+                        privateKey: 'cVGMwpMZEatVCTAz5hr4h56fvSHb2EqnxzHGCmxqXbASkBmGtZLX'
+                    },
+                    {
+                        address: 'mzYTf3HKxbNWFUodyMqGGc5Az7fsACQoCb',
+                        privateKey: 'cRESFZCZZ7tEJPBoKBG53WU5xALnxpDN38s9jDVtkiYdKRuSehcx'
+                    }
+                ],
+                redeemScript
             }
         };
 
@@ -322,17 +319,17 @@ describe('BtcTransactionHelper', () => {
                 amount: 3000,
                 txid: 'dcec9f208a62edb700819331aab376c17620e4afad0cda4db2277c5313d3f12d',
                 vout: 0,
-                scriptPubKey: 'a914f66ff70094b55bdd8e07c21ef4ae4e9860a8f52887',
+                scriptPubKey: 'a914f66ff70094b55bdd8e07c21ef4ae4e9860a8f52887'
             }
         ];
 
         const prevTxs = [
             {
-              txid: 'dcec9f208a62edb700819331aab376c17620e4afad0cda4db2277c5313d3f12d',
-              vout: 0,
-              scriptPubKey: 'a914f66ff70094b55bdd8e07c21ef4ae4e9860a8f52887',
-              redeemScript,
-              amount: 3000
+                txid: 'dcec9f208a62edb700819331aab376c17620e4afad0cda4db2277c5313d3f12d',
+                vout: 0,
+                scriptPubKey: 'a914f66ff70094b55bdd8e07c21ef4ae4e9860a8f52887',
+                redeemScript,
+                amount: 3000
             }
         ];
 
@@ -341,30 +338,38 @@ describe('BtcTransactionHelper', () => {
         const txHash = `d6f493316fb648f63c626b10179dbc908090fc2262866f00eee402e99bd82bbb`;
 
         const getUtxosStub = sinon.stub(btcTransactionHelper, 'getUtxos').resolves(utxos);
-        const signRawTransactionStub = sinon.stub(btcTransactionHelper.nodeClient, 'signTransaction').resolves(signedTxHex);
+        const signRawTransactionStub = sinon
+            .stub(btcTransactionHelper.nodeClient, 'signTransaction')
+            .resolves(signedTxHex);
         const sendRawTransactionStub = sinon.stub(btcTransactionHelper.nodeClient, 'sendTransaction').resolves(txHash);
 
-        const result = await btcTransactionHelper.transferBtc(senderAddressInformation, recipientsTransactionInformation);
+        const result = await btcTransactionHelper.transferBtc(
+            senderAddressInformation,
+            recipientsTransactionInformation
+        );
 
         assert.equal(result, txHash);
 
         assert.isTrue(getUtxosStub.calledWith(senderAddressInformation.address));
-        assert.isTrue(signRawTransactionStub.calledWith(txHex, prevTxs, [senderAddressInformation.info.members[0].privateKey, senderAddressInformation.info.members[1].privateKey]));
+        assert.isTrue(
+            signRawTransactionStub.calledWith(txHex, prevTxs, [
+                senderAddressInformation.info.members[0].privateKey,
+                senderAddressInformation.info.members[1].privateKey
+            ])
+        );
         assert.isTrue(sendRawTransactionStub.calledWith(signedTxHex));
 
         getUtxosStub.restore();
         signRawTransactionStub.restore();
         sendRawTransactionStub.restore();
-        
     });
 
     it('should transferBtc, with paymentData', async () => {
-                
         const btcTransactionHelper = new BtcTransactionHelper(config);
 
         const recipientAddress = 'mxAyE9QUS2PoKAsNv7h9bx2aBkvoVA68A4';
         const amountInBtc = 2000;
-        const recipientsTransactionInformation = [{recipientAddress, amountInBtc}];
+        const recipientsTransactionInformation = [{ recipientAddress, amountInBtc }];
         const paymentData = [Buffer.from('52534b5401d2a3d9f938e13cd947ec05abc7fe734df8dd8260', 'hex')];
 
         const utxos = [
@@ -372,7 +377,7 @@ describe('BtcTransactionHelper', () => {
                 amount: 3000,
                 txid: '74f7e8c0263be8b23b3deffbaf9ee74239076a0de57c695aef4669e22bee0d01',
                 vout: 0,
-                scriptPubKey: '76a91481a2a37f24c2d7af1382cfe3f5bfa570705efc3288ac',
+                scriptPubKey: '76a91481a2a37f24c2d7af1382cfe3f5bfa570705efc3288ac'
             }
         ];
 
@@ -381,10 +386,16 @@ describe('BtcTransactionHelper', () => {
         const txHash = `0550fcfa26839e7b5defdef60cf19e1b3b25324c6998ac66a9a2ddc72b8f34e8`;
 
         const getUtxosStub = sinon.stub(btcTransactionHelper, 'getUtxos').resolves(utxos);
-        const signRawTransactionStub = sinon.stub(btcTransactionHelper.nodeClient, 'signTransaction').resolves(signedTxHex);
+        const signRawTransactionStub = sinon
+            .stub(btcTransactionHelper.nodeClient, 'signTransaction')
+            .resolves(signedTxHex);
         const sendRawTransactionStub = sinon.stub(btcTransactionHelper.nodeClient, 'sendTransaction').resolves(txHash);
 
-        const result = await btcTransactionHelper.transferBtc(ADDRESS_INFORMATION, recipientsTransactionInformation, paymentData);
+        const result = await btcTransactionHelper.transferBtc(
+            ADDRESS_INFORMATION,
+            recipientsTransactionInformation,
+            paymentData
+        );
 
         assert.equal(result, txHash);
 
@@ -392,16 +403,14 @@ describe('BtcTransactionHelper', () => {
         assert.isTrue(signRawTransactionStub.calledWith(txHex, [], [ADDRESS_INFORMATION.privateKey]));
         assert.isTrue(sendRawTransactionStub.calledWith(signedTxHex));
 
-        assert.isTrue(signRawTransactionStub.args[0][0].includes(paymentData[0].toString('hex')))
+        assert.isTrue(signRawTransactionStub.args[0][0].includes(paymentData[0].toString('hex')));
 
         getUtxosStub.restore();
         signRawTransactionStub.restore();
         sendRawTransactionStub.restore();
-        
     });
 
     it('should get address balance', async () => {
-                    
         const btcTransactionHelper = new BtcTransactionHelper(config);
 
         const getUtxosStub = sinon.stub(btcTransactionHelper, 'getUtxos').resolves(utxos);
@@ -413,11 +422,9 @@ describe('BtcTransactionHelper', () => {
         assert.isTrue(getUtxosStub.calledWith(TEST_BTC_ADDRESS));
 
         getUtxosStub.restore();
-            
     });
 
     it('should get transaction', async () => {
-                            
         const amountInBtc = 2000;
         const txHash = `0550fcfa26839e7b5defdef60cf19e1b3b25324c6998ac66a9a2ddc72b8f34e8`;
 
@@ -426,8 +433,8 @@ describe('BtcTransactionHelper', () => {
                 amount: 1000,
                 txid: 'a20b03132ec6c1603c79af9a521ae7b287ed61dea39b8eeb61b603f3b0034a3e',
                 vout: 0,
-                scriptPubKey: 'a914831bf759c1c7424ba8a849e285ff0a6e4f160b3487',
-            },
+                scriptPubKey: 'a914831bf759c1c7424ba8a849e285ff0a6e4f160b3487'
+            }
         ];
 
         const btcTransactionHelper = new BtcTransactionHelper(config);
@@ -441,7 +448,9 @@ describe('BtcTransactionHelper', () => {
             conversion.btcToSatoshis(amountInBtc)
         );
 
-        const getTransactionStub = sinon.stub(btcTransactionHelper.nodeClient, 'getRawTransaction').resolves(tx.toHex());
+        const getTransactionStub = sinon
+            .stub(btcTransactionHelper.nodeClient, 'getRawTransaction')
+            .resolves(tx.toHex());
 
         const result = await btcTransactionHelper.getTransaction(txHash);
 
@@ -450,11 +459,9 @@ describe('BtcTransactionHelper', () => {
         assert.isTrue(getTransactionStub.calledWith(txHash));
 
         getTransactionStub.restore();
-                    
     });
 
     it('should fund address with default mining', async () => {
-                                            
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const txHash = `0550fcfa26839e7b5defdef60cf19e1b3b25324c6998ac66a9a2ddc72b8f34e8`;
 
@@ -470,11 +477,9 @@ describe('BtcTransactionHelper', () => {
         assert.isTrue(mineStub.calledOnce);
 
         fundAddressStub.restore();
-                                    
     });
 
     it('should fund address with explicit mining', async () => {
-                                            
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const txHash = `0550fcfa26839e7b5defdef60cf19e1b3b25324c6998ac66a9a2ddc72b8f34e8`;
 
@@ -490,11 +495,9 @@ describe('BtcTransactionHelper', () => {
         assert.isTrue(mineStub.calledOnce);
 
         fundAddressStub.restore();
-                                    
     });
 
     it('should fund address without mining', async () => {
-                                            
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const txHash = `0550fcfa26839e7b5defdef60cf19e1b3b25324c6998ac66a9a2ddc72b8f34e8`;
 
@@ -510,11 +513,9 @@ describe('BtcTransactionHelper', () => {
         assert.isTrue(mineStub.notCalled);
 
         fundAddressStub.restore();
-                                    
     });
 
     it('should mine', async () => {
-                                                    
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const txHash = `0550fcfa26839e7b5defdef60cf19e1b3b25324c6998ac66a9a2ddc72b8f34e8`;
 
@@ -527,27 +528,22 @@ describe('BtcTransactionHelper', () => {
         assert.isTrue(mineStub.calledWith(1));
 
         mineStub.restore();
-                                            
     });
 
     it('should decode base 58 address', async () => {
-                                                    
         const btcTransactionHelper = new BtcTransactionHelper(config);
 
         const result = btcTransactionHelper.decodeBase58Address(TEST_BTC_ADDRESS);
 
         assert.equal(result, '6fbba2e52eae9579b7605d9988d2ebe5bc306251ad');
-    
     });
 
     it('should decode base 58 address without version', async () => {
-                                                    
         const btcTransactionHelper = new BtcTransactionHelper(config);
 
         const result = btcTransactionHelper.decodeBase58Address(TEST_BTC_ADDRESS, false);
 
         assert.equal(result, 'bba2e52eae9579b7605d9988d2ebe5bc306251ad');
-    
     });
 
     it('should parse btc raw transaction', async () => {
@@ -555,7 +551,9 @@ describe('BtcTransactionHelper', () => {
             // Arrange
             const btcTransaction = SAMPLE_BTC_TRANSACTIONS[i];
             const btcTransactionHelper = new BtcTransactionHelper(config);
-            const parsedBtcTransactionStub = sinon.stub(btcTransactionHelper, 'parseRawTransaction').resolves(btcTransaction.decodedTx);
+            const parsedBtcTransactionStub = sinon
+                .stub(btcTransactionHelper, 'parseRawTransaction')
+                .resolves(btcTransaction.decodedTx);
             // Act
             const result = await btcTransactionHelper.parseRawTransaction(btcTransaction.rawTx);
             // Assert
@@ -571,12 +569,12 @@ describe('BtcTransactionHelper', () => {
     it('should failed parsing malformed btc raw transaction', async () => {
         // Arrange
         const btcTransactionHelper = new BtcTransactionHelper(config);
-        const decodeError = new Error("Error: TX decode failed");
+        const decodeError = new Error('Error: TX decode failed');
         decodeError.code = -22;
         sinon.stub(btcTransactionHelper, 'parseRawTransaction').throws(decodeError);
 
         try {
-            await btcTransactionHelper.parseRawTransaction("MALFORMED BTC TRANSACTION")
+            await btcTransactionHelper.parseRawTransaction('MALFORMED BTC TRANSACTION');
         } catch (err) {
             assert.strictEqual(err.code, decodeError.code);
             assert.strictEqual(err.message, decodeError.message);
@@ -616,7 +614,8 @@ describe('BtcTransactionHelper', () => {
 
     it('should get block header as hex when jsonEncoded param is passed as false', async () => {
         const blockHash = '720051c391d1c162c995d645044e63bbe953555c9b28a8fbd5e624c7224d13a3';
-        const blockHeaderHex = '00000020e23f0060e4adccf6f36da74b7d49ddb41c558da75fa1ded9f6c6dae96b6d3c5aa74ee5e800fa6184aed8464eec15448de8a0ed14c3b0e2983cac13632f19637f2ba57865ffff7f2000000000';
+        const blockHeaderHex =
+            '00000020e23f0060e4adccf6f36da74b7d49ddb41c558da75fa1ded9f6c6dae96b6d3c5aa74ee5e800fa6184aed8464eec15448de8a0ed14c3b0e2983cac13632f19637f2ba57865ffff7f2000000000';
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const getBlockHeaderStub = sinon.stub(btcTransactionHelper.nodeClient, 'getBlockHeader');
         getBlockHeaderStub.resolves(blockHeaderHex);
@@ -655,5 +654,4 @@ describe('BtcTransactionHelper', () => {
         assert.deepEqual(actualTransactionsInMempool, [txId1, txId2]);
         getTransactionsInMempoolStub.restore();
     });
-
 });

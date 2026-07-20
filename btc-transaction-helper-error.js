@@ -3,4 +3,4 @@ module.exports = class BtcTransactionHelperError extends Error {
         super(message);
         this.stack += '\n Internal ' + err.stack;
     }
-}
+};

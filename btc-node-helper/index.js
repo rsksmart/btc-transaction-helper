@@ -1,16 +1,16 @@
 const bitcoin = require('bitcoin');
 const bitcoinjs = require('bitcoinjs-lib');
 
-const promisefy = function(client, f, args) {
+const promisefy = function (client, f, args) {
     args = args || [];
-    return new Promise(function(resolve, reject) {
-        var callback = function(error, result) {
+    return new Promise(function (resolve, reject) {
+        var callback = function (error, result) {
             if (error) {
                 reject(error);
                 return;
             }
             resolve(result);
-        }
+        };
         var finalArgs = args.concat(callback);
         f.apply(client, finalArgs);
     });
@@ -63,7 +63,7 @@ module.exports = class BtcNodeHelper {
         type = type || 'legacy';
 
         if (signerSize < requiredSigners) {
-            throw new Error("Total amount of signers can not be smaller than signers amount");
+            throw new Error('Total amount of signers can not be smaller than signers amount');
         }
 
         const network = this.getNetwork();
@@ -100,11 +100,12 @@ module.exports = class BtcNodeHelper {
     }
 
     async signTransaction(unsignedTransaction, previousTransactions, privateKeys) {
-        let signedTxResult = await promisefy(
-            this.client,
-            this.client.cmd,
-            ['signrawtransactionwithkey', unsignedTransaction, privateKeys, previousTransactions]
-        );
+        let signedTxResult = await promisefy(this.client, this.client.cmd, [
+            'signrawtransactionwithkey',
+            unsignedTransaction,
+            privateKeys,
+            previousTransactions
+        ]);
         if (!signedTxResult.complete) {
             console.error('failed to sign', signedTxResult.errors);
             throw new Error('failed to sign');
@@ -126,7 +127,7 @@ module.exports = class BtcNodeHelper {
             this.miningAddress = await promisefy(this.client, this.client.getNewAddress, []);
         }
         return this.execute('generatetoaddress', [blocks, this.miningAddress]);
-    };
+    }
 
     getBlock(blockHash, deserialized = true) {
         return promisefy(this.client, this.client.getBlock, [blockHash, deserialized]);
@@ -167,10 +168,9 @@ module.exports = class BtcNodeHelper {
 
     getBlockHeader(blockHash, jsonEncoded = true) {
         return this.execute('getblockheader', [blockHash, jsonEncoded]);
-    };
+    }
 
     getTransactionsInMempool(verbose = false) {
         return this.execute('getrawmempool', [verbose]);
     }
-
 };

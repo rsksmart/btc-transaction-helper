@@ -1,4 +1,4 @@
-export { TxOutput, Transaction, Network } from "bitcoinjs-lib";
+export { TxOutput, Transaction, Network } from 'bitcoinjs-lib';
 
 export interface AddressInformation {
     address: string;
@@ -26,55 +26,55 @@ export interface RecipientTransferInformation {
 }
 
 export interface BlockHeader {
-        hash: string,
-        confirmations: number,
-        height: number,
-        version: number,
-        versionHex: string,
-        merkleroot: string,
-        time: number,
-        mediantime: number,
-        nonce: number,
-        bits: string,
-        difficulty: number,
-        chainwork: string,
-        nTx: number,
-        previousblockhash: string,
-        nextblockhash: string
+    hash: string;
+    confirmations: number;
+    height: number;
+    version: number;
+    versionHex: string;
+    merkleroot: string;
+    time: number;
+    mediantime: number;
+    nonce: number;
+    bits: string;
+    difficulty: number;
+    chainwork: string;
+    nTx: number;
+    previousblockhash: string;
+    nextblockhash: string;
 }
 
 enum AddressType {
     legacy = 'legacy',
     p2shSegwit = 'p2sh-segwit',
-    bech32 = 'bech32',
+    bech32 = 'bech32'
 }
 
 export interface MempoolTransaction {
     fees: {
-        base: number,
-        modified: number,
-        ancestor: number,
-        descendant: number
-    },
-    size: number,
-    fee: number,
-    modifiedfee: number,
-    time: number,
-    height: number,
-    descendantcount: number,
-    descendantsize: number,
-    descendantfees: number,
-    ancestorcount: number,
-    ancestorsize: number,
-    ancestorfees: number,
-    wtxid: string,
-    depends: [],
-    spentby: [],
-    'bip125-replaceable': boolean
+        base: number;
+        modified: number;
+        ancestor: number;
+        descendant: number;
+    };
+    size: number;
+    fee: number;
+    modifiedfee: number;
+    time: number;
+    height: number;
+    descendantcount: number;
+    descendantsize: number;
+    descendantfees: number;
+    ancestorcount: number;
+    ancestorsize: number;
+    ancestorfees: number;
+    wtxid: string;
+    depends: [];
+    spentby: [];
+    'bip125-replaceable': boolean;
 }
 
 export interface MempoolTransactions {
-    [txId: string]: MempoolTransaction
+    [txId: string]: MempoolTransaction;
 }
 
 type BtcTransactionHelperConfig = {
@@ -85,15 +85,23 @@ type BtcTransactionHelperConfig = {
     network?: string;
     timeout?: number;
     txFee?: number;
-}
+};
 
 export class BtcTransactionHelper {
     constructor(config: BtcTransactionHelperConfig);
     generateBtcAddress(type: AddressType): Promise<AddressInformation>;
-    generateMultisigAddress(signerSize: number, requiredSigners: number, type: AddressType): Promise<MultisigAddressInformation>;
+    generateMultisigAddress(
+        signerSize: number,
+        requiredSigners: number,
+        type: AddressType
+    ): Promise<MultisigAddressInformation>;
     selectSpendableUTXOsFromAddress(address: string, amountInBtc: number): Promise<SpendableUtxosInformation>;
     getUtxos(address: string): Promise<TxOutput>;
-    transferBtc(senderAddressInformation: AddressInformation, recipientsTransactionInformation: RecipientTransferInformation, paymentData: Buffer[]): Promise<string>;
+    transferBtc(
+        senderAddressInformation: AddressInformation,
+        recipientsTransactionInformation: RecipientTransferInformation,
+        paymentData: Buffer[]
+    ): Promise<string>;
     getAddressBalance(address: string): Promise<number>;
     getOutputAddress(outputScript: Buffer): string;
     getTransaction(txHash: string): Promise<Transaction>;
