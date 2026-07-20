@@ -11,21 +11,21 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bitcoin": "^3.0.1",
-    "bitcoinjs-lib": "^5.1.10",
-    "chai-as-promised": "^7.1.1",
-    "rewire": "^6.0.0",
-    "sinon": "^15.0.4"
+    "bitcoin": "3.0.1",
+    "bitcoinjs-lib": "5.1.10",
+    "chai-as-promised": "7.1.1",
+    "rewire": "6.0.0",
+    "sinon": "15.0.4"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.4",
-    "chai": "^4.3.7",
-    "eslint": "^9.39.4",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-chai-friendly": "^1.2.1",
-    "eslint-plugin-import": "^2.32.0",
-    "globals": "^17.7.0",
-    "mocha": "^10.2.0",
-    "prettier": "^3.9.5"
+    "@eslint/js": "9.39.4",
+    "chai": "4.3.7",
+    "eslint": "9.39.4",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-chai-friendly": "1.2.1",
+    "eslint-plugin-import": "2.32.0",
+    "globals": "17.7.0",
+    "mocha": "10.2.0",
+    "prettier": "3.9.5"
   }
 }
