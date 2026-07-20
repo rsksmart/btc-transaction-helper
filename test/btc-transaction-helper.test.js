@@ -120,19 +120,18 @@ const transactionsInMempoolVerbose =  {
 
 describe('BtcTransactionHelper', () => {
 
-    it('should import address', async () => {
+    it('should treat importAddress as a deprecated no-op', async () => {
 
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const nodeClient = btcTransactionHelper.nodeClient;
-        const executeImportAddressStub = sinon.stub(nodeClient, 'execute').resolves(null);
+        const executeStub = sinon.stub(nodeClient, 'execute').resolves(null);
         const result = await btcTransactionHelper.importAddress(TEST_BTC_ADDRESS, 'label');
 
         assert.isNull(result);
-        assert.isTrue(executeImportAddressStub.calledOnce);
-        assert.isTrue(executeImportAddressStub.calledWith('importaddress', [TEST_BTC_ADDRESS, 'label']));
+        assert.isTrue(executeStub.notCalled);
 
-        executeImportAddressStub.restore();
-        
+        executeStub.restore();
+
     });
 
     it('should generate address information', async () => {
@@ -253,6 +252,59 @@ describe('BtcTransactionHelper', () => {
         
     });
 
+    it('should transferBtc from a p2sh-segwit address providing the redeem script', async () => {
+
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const network = config.network;
+
+        const keyPair = bitcoin.ECPair.fromWIF(PRIVATE_KEY, network);
+        const p2shSegwit = bitcoin.payments.p2sh({
+            redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network }),
+            network
+        });
+        const senderAddressInformation = {
+            address: p2shSegwit.address,
+            privateKey: PRIVATE_KEY
+        };
+
+        const recipientAddress = 'mxAyE9QUS2PoKAsNv7h9bx2aBkvoVA68A4';
+        const recipientsTransactionInformation = [{recipientAddress, amountInBtc: 2000}];
+
+        const utxos = [
+            {
+                amount: 3000,
+                txid: '74f7e8c0263be8b23b3deffbaf9ee74239076a0de57c695aef4669e22bee0d01',
+                vout: 0,
+                scriptPubKey: bitcoin.address.toOutputScript(p2shSegwit.address, network).toString('hex'),
+            }
+        ];
+
+        const signedTxHex = `010000000001010dee2be26946ef5a697ce50d6a073942e79eaffbef3d3bb2e83b26c0e8f774`;
+        const txHash = `0550fcfa26839e7b5defdef60cf19e1b3b25324c6998ac66a9a2ddc72b8f34e8`;
+
+        const getUtxosStub = sinon.stub(btcTransactionHelper, 'getUtxos').resolves(utxos);
+        const signRawTransactionStub = sinon.stub(btcTransactionHelper.nodeClient, 'signTransaction').resolves(signedTxHex);
+        const sendRawTransactionStub = sinon.stub(btcTransactionHelper.nodeClient, 'sendTransaction').resolves(txHash);
+
+        const result = await btcTransactionHelper.transferBtc(senderAddressInformation, recipientsTransactionInformation);
+
+        assert.equal(result, txHash);
+
+        const prevTxs = signRawTransactionStub.args[0][1];
+        assert.lengthOf(prevTxs, 1);
+        assert.equal(prevTxs[0].txid, utxos[0].txid);
+        assert.equal(prevTxs[0].vout, utxos[0].vout);
+        assert.equal(prevTxs[0].scriptPubKey, utxos[0].scriptPubKey);
+        assert.equal(prevTxs[0].redeemScript, p2shSegwit.redeem.output.toString('hex'));
+        assert.equal(prevTxs[0].amount, utxos[0].amount);
+        assert.isTrue(signRawTransactionStub.args[0][2].includes(PRIVATE_KEY));
+
+        getUtxosStub.restore();
+        signRawTransactionStub.restore();
+        sendRawTransactionStub.restore();
+
+    });
+
     it('should transferBtc, multisig', async () => {
                 
         const btcTransactionHelper = new BtcTransactionHelper(config);
@@ -290,7 +342,7 @@ describe('BtcTransactionHelper', () => {
 
         const prevTxs = [
             {
-              txid: 'cb8992d27e91e3bef226635c546b8bb423a8eb67d6f8cf56f1246511a37e5e2d',
+              txid: 'dcec9f208a62edb700819331aab376c17620e4afad0cda4db2277c5313d3f12d',
               vout: 0,
               scriptPubKey: 'a914f66ff70094b55bdd8e07c21ef4ae4e9860a8f52887',
               redeemScript,

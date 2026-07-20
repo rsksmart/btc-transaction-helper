@@ -161,15 +161,35 @@ class BtcTransactionHelper {
             if (senderAddressInformation.info) {
                 utxosInfo.utxos.forEach(uxto => {
                     prevTxs.push({
-                        txid: tx.getId(),
+                        txid: uxto.txid,
                         vout: uxto.vout,
                         scriptPubKey: uxto.scriptPubKey.toString('hex'),
                         redeemScript: senderAddressInformation.info.redeemScript,
                         amount: uxto.amount
                     });
                 });
-                
+
                 privateKeys = senderAddressInformation.info.members.map(a => a.privateKey);
+            } else {
+                // p2sh-segwit inputs cannot be signed from the private key alone,
+                // `signrawtransactionwithkey` requires the redeem script in prevtxs
+                const network = this.nodeClient.getNetwork();
+                const keyPair = bitcoin.ECPair.fromWIF(senderAddressInformation.privateKey, network);
+                const p2shSegwit = bitcoin.payments.p2sh({
+                    redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network }),
+                    network
+                });
+                if (fromAddress === p2shSegwit.address) {
+                    utxosInfo.utxos.forEach(uxto => {
+                        prevTxs.push({
+                            txid: uxto.txid,
+                            vout: uxto.vout,
+                            scriptPubKey: uxto.scriptPubKey.toString('hex'),
+                            redeemScript: p2shSegwit.redeem.output.toString('hex'),
+                            amount: uxto.amount
+                        });
+                    });
+                }
             }
 
             const signedTx = await this.nodeClient.signTransaction(tx.toHex(), prevTxs, privateKeys);
@@ -215,13 +235,16 @@ class BtcTransactionHelper {
     }
 
     /**
-     * 
-     * @param {string} address 
-     * @param {string} label 
+     * @deprecated The `importaddress` RPC was removed in Bitcoin Core 30 along with the legacy wallet.
+     * Importing addresses is no longer necessary: `getUtxos` now scans the UTXO set directly
+     * (`scantxoutset`), so any address can be queried without the node wallet tracking it.
+     * Kept as a no-op for backward compatibility.
+     * @param {string} address
+     * @param {string} label
      * @returns {null}
      */
     async importAddress(address, label) {
-        return await this.nodeClient.execute('importaddress', [address, label]);
+        return null;
     }
 
     /**
