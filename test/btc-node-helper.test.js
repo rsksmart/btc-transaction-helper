@@ -3,11 +3,14 @@ const chai = require('chai');
 const chaiAsPromise = require('chai-as-promised');
 const sinon = require('sinon');
 const bitcoinjs = require('bitcoinjs-lib');
+const ECPairFactory = require('ecpair').default;
+const ecc = require('tiny-secp256k1');
 const BtcNodeHelper = require('../btc-node-helper/index');
 const config = require('../samples/config');
 
 chai.use(chaiAsPromise);
 
+const ECPair = ECPairFactory(ecc);
 const NETWORK = bitcoinjs.networks.regtest;
 
 describe('BtcNodeHelper', () => {
@@ -15,7 +18,7 @@ describe('BtcNodeHelper', () => {
         const nodeHelper = new BtcNodeHelper(config);
         const result = await nodeHelper.generateAddressInformation('legacy');
 
-        const keyPair = bitcoinjs.ECPair.fromWIF(result.privateKey, NETWORK);
+        const keyPair = ECPair.fromWIF(result.privateKey, NETWORK);
         const expectedAddress = bitcoinjs.payments.p2pkh({ pubkey: keyPair.publicKey, network: NETWORK }).address;
 
         assert.equal(result.address, expectedAddress);
@@ -25,7 +28,7 @@ describe('BtcNodeHelper', () => {
         const nodeHelper = new BtcNodeHelper(config);
         const result = await nodeHelper.generateAddressInformation();
 
-        const keyPair = bitcoinjs.ECPair.fromWIF(result.privateKey, NETWORK);
+        const keyPair = ECPair.fromWIF(result.privateKey, NETWORK);
         const expectedAddress = bitcoinjs.payments.p2pkh({ pubkey: keyPair.publicKey, network: NETWORK }).address;
 
         assert.equal(result.address, expectedAddress);
@@ -35,7 +38,7 @@ describe('BtcNodeHelper', () => {
         const nodeHelper = new BtcNodeHelper(config);
         const result = await nodeHelper.generateAddressInformation('p2sh-segwit');
 
-        const keyPair = bitcoinjs.ECPair.fromWIF(result.privateKey, NETWORK);
+        const keyPair = ECPair.fromWIF(result.privateKey, NETWORK);
         const expectedAddress = bitcoinjs.payments.p2sh({
             redeem: bitcoinjs.payments.p2wpkh({ pubkey: keyPair.publicKey, network: NETWORK }),
             network: NETWORK
@@ -48,7 +51,7 @@ describe('BtcNodeHelper', () => {
         const nodeHelper = new BtcNodeHelper(config);
         const result = await nodeHelper.generateAddressInformation('bech32');
 
-        const keyPair = bitcoinjs.ECPair.fromWIF(result.privateKey, NETWORK);
+        const keyPair = ECPair.fromWIF(result.privateKey, NETWORK);
         const expectedAddress = bitcoinjs.payments.p2wpkh({ pubkey: keyPair.publicKey, network: NETWORK }).address;
 
         assert.equal(result.address, expectedAddress);
@@ -86,7 +89,7 @@ describe('BtcNodeHelper', () => {
 
         // The public keys sent to the node have to correspond to the members private keys, in order
         const expectedPublicKeys = result.info.members.map(member =>
-            bitcoinjs.ECPair.fromWIF(member.privateKey, NETWORK).publicKey.toString('hex')
+            ECPair.fromWIF(member.privateKey, NETWORK).publicKey.toString('hex')
         );
         assert.deepEqual(args[1], expectedPublicKeys);
 
@@ -154,6 +157,30 @@ describe('BtcNodeHelper', () => {
         assert.equal(result[0].scriptPubKey, unspents[0].scriptPubKey);
         assert.equal(result[0].amount, unspents[0].amount);
         assert.equal(result[0].address, address);
+
+        executeStub.restore();
+    });
+
+    it('should create a wallet with the default name', async () => {
+        const nodeHelper = new BtcNodeHelper(config);
+        const executeStub = sinon.stub(nodeHelper, 'execute').resolves({ name: 'default', warning: '' });
+
+        const result = await nodeHelper.createWallet();
+
+        assert.isTrue(executeStub.calledWith('createwallet', ['default']));
+        assert.equal(result.name, 'default');
+
+        executeStub.restore();
+    });
+
+    it('should create a wallet with a custom name', async () => {
+        const nodeHelper = new BtcNodeHelper(config);
+        const executeStub = sinon.stub(nodeHelper, 'execute').resolves({ name: 'my-wallet', warning: '' });
+
+        const result = await nodeHelper.createWallet('my-wallet');
+
+        assert.isTrue(executeStub.calledWith('createwallet', ['my-wallet']));
+        assert.equal(result.name, 'my-wallet');
 
         executeStub.restore();
     });

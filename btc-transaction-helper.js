@@ -2,7 +2,11 @@
 const BtcHelperException = require('./btc-transaction-helper-error');
 const BtcNodeHelper = require('./btc-node-helper/index');
 const bitcoin = require('bitcoinjs-lib');
+const ECPairFactory = require('ecpair').default;
+const ecc = require('tiny-secp256k1');
 const { btcToSatoshis, satoshisToBtc } = require('./conversion');
+
+const ECPair = ECPairFactory(ecc);
 
 const DEFAULT_BTC_CONFIG = {
     host: 'localhost',
@@ -169,7 +173,7 @@ class BtcTransactionHelper {
                 // p2sh-segwit inputs cannot be signed from the private key alone,
                 // `signrawtransactionwithkey` requires the redeem script in prevtxs
                 const network = this.nodeClient.getNetwork();
-                const keyPair = bitcoin.ECPair.fromWIF(senderAddressInformation.privateKey, network);
+                const keyPair = ECPair.fromWIF(senderAddressInformation.privateKey, network);
                 const p2shSegwit = bitcoin.payments.p2sh({
                     redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network }),
                     network
@@ -312,6 +316,20 @@ class BtcTransactionHelper {
      */
     getTransactionsInMempool(verbose = false) {
         return this.nodeClient.getTransactionsInMempool(verbose);
+    }
+
+    /**
+     * Creates a wallet on the node so wallet-dependent methods (e.g. `mine`, `fundAddress`)
+     * can be used. Bitcoin Core no longer auto-creates a default wallet on startup.
+     * @param {string} walletName defaults to 'default'
+     * @returns {{name: string, warning: string}} result
+     */
+    async createWallet(walletName = 'default') {
+        try {
+            return await this.nodeClient.createWallet(walletName);
+        } catch (err) {
+            throw new BtcHelperException('Error creating wallet', err);
+        }
     }
 }
 

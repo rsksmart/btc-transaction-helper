@@ -1,5 +1,9 @@
 const bitcoin = require('bitcoin');
 const bitcoinjs = require('bitcoinjs-lib');
+const ECPairFactory = require('ecpair').default;
+const ecc = require('tiny-secp256k1');
+
+const ECPair = ECPairFactory(ecc);
 
 const promisefy = function (client, f, args) {
     args = args || [];
@@ -50,7 +54,7 @@ module.exports = class BtcNodeHelper {
     async generateAddressInformation(type) {
         type = type || 'legacy';
         const network = this.getNetwork();
-        const keyPair = bitcoinjs.ECPair.makeRandom({ network });
+        const keyPair = ECPair.makeRandom({ network });
         return {
             address: getAddressFromPublicKey(keyPair.publicKey, type, network),
             privateKey: keyPair.toWIF()
@@ -74,9 +78,7 @@ module.exports = class BtcNodeHelper {
             members.push(await this.generateAddressInformation(type));
         }
 
-        const publicKeys = members.map(member =>
-            bitcoinjs.ECPair.fromWIF(member.privateKey, network).publicKey.toString('hex')
-        );
+        const publicKeys = members.map(member => ECPair.fromWIF(member.privateKey, network).publicKey.toString('hex'));
 
         // `addmultisigaddress` was removed in Bitcoin Core 30 with the legacy wallet.
         // `createmultisig` does not require a wallet and takes public keys instead of addresses.
@@ -172,5 +174,13 @@ module.exports = class BtcNodeHelper {
 
     getTransactionsInMempool(verbose = false) {
         return this.execute('getrawmempool', [verbose]);
+    }
+
+    /**
+     * Creates a wallet on the node so wallet-dependent RPCs (e.g. `mine`, `fundAddress`)
+     * can be used. Bitcoin Core no longer auto-creates a default wallet on startup.
+     */
+    createWallet(walletName = 'default') {
+        return this.execute('createwallet', [walletName]);
     }
 };
