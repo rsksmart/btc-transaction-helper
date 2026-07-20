@@ -120,20 +120,6 @@ const transactionsInMempoolVerbose =  {
 
 describe('BtcTransactionHelper', () => {
 
-    it('should treat importAddress as a deprecated no-op', async () => {
-
-        const btcTransactionHelper = new BtcTransactionHelper(config);
-        const nodeClient = btcTransactionHelper.nodeClient;
-        const executeStub = sinon.stub(nodeClient, 'execute').resolves(null);
-        const result = await btcTransactionHelper.importAddress(TEST_BTC_ADDRESS, 'label');
-
-        assert.isNull(result);
-        assert.isTrue(executeStub.notCalled);
-
-        executeStub.restore();
-
-    });
-
     it('should generate address information', async () => {
 
         const btcTransactionHelper = new BtcTransactionHelper(config);

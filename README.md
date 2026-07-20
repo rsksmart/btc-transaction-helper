@@ -11,7 +11,7 @@ Version 4.x is compatible with modern Bitcoin Core releases (tested against Bitc
 - Key pairs are now generated locally with `bitcoinjs-lib` instead of `getnewaddress` + `dumpprivkey` (`dumpprivkey` was removed in Bitcoin Core 30 along with the legacy wallet).
 - Multisig addresses are created with the wallet-less `createmultisig` RPC instead of the removed `addmultisigaddress`.
 - `getUtxos` (and therefore `getAddressBalance`, `transferBtc`, etc.) scans the UTXO set with `scantxoutset` instead of `listunspent`, so it works for any address without the node wallet tracking it. Note that only confirmed UTXOs are visible, so mine a block after funding an address (`fundAddress` does this by default).
-- `importAddress` is now a deprecated no-op (`importaddress` was removed in Bitcoin Core 30). It is no longer necessary.
+- `importAddress` was removed (`importaddress` was removed in Bitcoin Core 30 and is no longer necessary — `getUtxos`/`getAddressBalance` see any address without it).
 - Mining uses `generatetoaddress` (the `generate` RPC was removed in Bitcoin Core 0.19), sending rewards to a node wallet address so the wallet keeps funds for `fundAddress`.
 
 ### Node requirements
@@ -29,8 +29,6 @@ On regtest, set `-fallbackfee=0.0001` (or add `fallbackfee=0.0001` to `bitcoin.c
 > node samples/rpc-commands.js
 
 > node samples/transferBtc-samples.js
-
-> node samples/import-address.js
 
 > node samples/conversion.js
  
