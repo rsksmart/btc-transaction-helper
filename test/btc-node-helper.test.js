@@ -160,4 +160,28 @@ describe('BtcNodeHelper', () => {
 
         executeStub.restore();
     });
+
+    it('should create a wallet with the default name', async () => {
+        const nodeHelper = new BtcNodeHelper(config);
+        const executeStub = sinon.stub(nodeHelper, 'execute').resolves({ name: 'default', warning: '' });
+
+        const result = await nodeHelper.createWallet();
+
+        assert.isTrue(executeStub.calledWith('createwallet', ['default']));
+        assert.equal(result.name, 'default');
+
+        executeStub.restore();
+    });
+
+    it('should create a wallet with a custom name', async () => {
+        const nodeHelper = new BtcNodeHelper(config);
+        const executeStub = sinon.stub(nodeHelper, 'execute').resolves({ name: 'my-wallet', warning: '' });
+
+        const result = await nodeHelper.createWallet('my-wallet');
+
+        assert.isTrue(executeStub.calledWith('createwallet', ['my-wallet']));
+        assert.equal(result.name, 'my-wallet');
+
+        executeStub.restore();
+    });
 });

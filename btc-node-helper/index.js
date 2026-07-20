@@ -175,4 +175,12 @@ module.exports = class BtcNodeHelper {
     getTransactionsInMempool(verbose = false) {
         return this.execute('getrawmempool', [verbose]);
     }
+
+    /**
+     * Creates a wallet on the node so wallet-dependent RPCs (e.g. `mine`, `fundAddress`)
+     * can be used. Bitcoin Core no longer auto-creates a default wallet on startup.
+     */
+    createWallet(walletName = 'default') {
+        return this.execute('createwallet', [walletName]);
+    }
 };

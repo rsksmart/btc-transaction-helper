@@ -658,4 +658,43 @@ describe('BtcTransactionHelper', () => {
         assert.deepEqual(actualTransactionsInMempool, [txId1, txId2]);
         getTransactionsInMempoolStub.restore();
     });
+
+    it('should create a wallet with the default name', async () => {
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const createWalletStub = sinon
+            .stub(btcTransactionHelper.nodeClient, 'createWallet')
+            .resolves({ name: 'default', warning: '' });
+
+        const result = await btcTransactionHelper.createWallet();
+
+        assert.isTrue(createWalletStub.calledWith(undefined));
+        assert.equal(result.name, 'default');
+
+        createWalletStub.restore();
+    });
+
+    it('should create a wallet with a custom name', async () => {
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const createWalletStub = sinon
+            .stub(btcTransactionHelper.nodeClient, 'createWallet')
+            .resolves({ name: 'my-wallet', warning: '' });
+
+        const result = await btcTransactionHelper.createWallet('my-wallet');
+
+        assert.isTrue(createWalletStub.calledWith('my-wallet'));
+        assert.equal(result.name, 'my-wallet');
+
+        createWalletStub.restore();
+    });
+
+    it('should wrap createWallet errors in a BtcHelperException', async () => {
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const createWalletStub = sinon
+            .stub(btcTransactionHelper.nodeClient, 'createWallet')
+            .rejects(new Error('rpc failure'));
+
+        await expect(btcTransactionHelper.createWallet()).to.eventually.be.rejectedWith('Error creating wallet');
+
+        createWalletStub.restore();
+    });
 });

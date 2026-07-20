@@ -317,6 +317,20 @@ class BtcTransactionHelper {
     getTransactionsInMempool(verbose = false) {
         return this.nodeClient.getTransactionsInMempool(verbose);
     }
+
+    /**
+     * Creates a wallet on the node so wallet-dependent methods (e.g. `mine`, `fundAddress`)
+     * can be used. Bitcoin Core no longer auto-creates a default wallet on startup.
+     * @param {string} walletName defaults to 'default'
+     * @returns {{name: string, warning: string}} result
+     */
+    async createWallet(walletName) {
+        try {
+            return await this.nodeClient.createWallet(walletName);
+        } catch (err) {
+            throw new BtcHelperException('Error creating wallet', err);
+        }
+    }
 }
 
 module.exports = BtcTransactionHelper;
