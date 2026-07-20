@@ -235,19 +235,6 @@ class BtcTransactionHelper {
     }
 
     /**
-     * @deprecated The `importaddress` RPC was removed in Bitcoin Core 30 along with the legacy wallet.
-     * Importing addresses is no longer necessary: `getUtxos` now scans the UTXO set directly
-     * (`scantxoutset`), so any address can be queried without the node wallet tracking it.
-     * Kept as a no-op for backward compatibility.
-     * @param {string} address
-     * @param {string} label
-     * @returns {null}
-     */
-    async importAddress(address, label) {
-        return null;
-    }
-
-    /**
      * 
      * @param {string} address to be funded
      * @param {number} amountInBtc in btc to be send to the address

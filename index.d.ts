@@ -97,11 +97,6 @@ export class BtcTransactionHelper {
     getAddressBalance(address: string): Promise<number>;
     getOutputAddress(outputScript: Buffer): string;
     getTransaction(txHash: string): Promise<Transaction>;
-    /**
-     * @deprecated No-op since Bitcoin Core 30 removed the `importaddress` RPC.
-     * `getUtxos` scans the UTXO set directly, so importing addresses is no longer needed.
-     */
-    importAddress(address: string, label: string): Promise<null>;
     fundAddress(address: string, amountInBtc: number, mineBlock?: boolean = true): Promise<string>;
     mine(blocks: number = 1): Promise<string[]>;
     getFee(): number;
