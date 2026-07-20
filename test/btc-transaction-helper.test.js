@@ -5,9 +5,13 @@ const config = require('../samples/config');
 const sinon = require('sinon');
 const chaiAsPromise = require('chai-as-promised');
 const bitcoin = require('bitcoinjs-lib');
+const ECPairFactory = require('ecpair').default;
+const ecc = require('tiny-secp256k1');
 const conversion = require('../conversion');
 
 chai.use(chaiAsPromise);
+
+const ECPair = ECPairFactory(ecc);
 
 const TEST_BTC_ADDRESS = 'mxd5o5xQc6Qvo956mHGkVX9ZvAfoNNh9Ec';
 const PRIVATE_KEY = 'cRDAG3moz46jcmTb4AP1jnGCzYy8kkfexQVzTMBQcswr8DKEzCz4';
@@ -236,7 +240,7 @@ describe('BtcTransactionHelper', () => {
         const btcTransactionHelper = new BtcTransactionHelper(config);
         const network = config.network;
 
-        const keyPair = bitcoin.ECPair.fromWIF(PRIVATE_KEY, network);
+        const keyPair = ECPair.fromWIF(PRIVATE_KEY, network);
         const p2shSegwit = bitcoin.payments.p2sh({
             redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network }),
             network
