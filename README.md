@@ -1,4 +1,6 @@
-![Github CI/CD](https://github.com/rsksmart/btc-transaction-helper/actions/workflows/workflow.yml/badge.svg)
+![Build and Test](https://github.com/rsksmart/btc-transaction-helper/actions/workflows/build-test.yml/badge.svg)
+[![CodeQL](https://github.com/rsksmart/btc-transaction-helper/workflows/CodeQL/badge.svg)](https://github.com/rsksmart/btc-transaction-helper/actions?query=workflow%3ACodeQL)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/rsksmart/btc-transaction-helper/badge)](https://scorecard.dev/viewer/?uri=github.com/rsksmart/btc-transaction-helper)
 
 # btc-transaction-helper
 
@@ -31,5 +33,5 @@ On regtest, set `-fallbackfee=0.0001` (or add `fallbackfee=0.0001` to `bitcoin.c
 > node samples/transferBtc-samples.js
 
 > node samples/conversion.js
- 
+
 **Note:** These samples (except for 'conversion') require a running bitcoin instance to connect to. Update `samples/config.js` with the proper configuration.
