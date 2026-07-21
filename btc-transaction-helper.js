@@ -133,7 +133,7 @@ class BtcTransactionHelper {
             recipientsTransactionInformation.forEach(output => {
                 tx.addOutput(
                     bitcoin.address.toOutputScript(output.recipientAddress, this.btcConfig.network),
-                    this.nodeClient.btcToSatoshis(output.amountInBtc)
+                    BigInt(this.nodeClient.btcToSatoshis(output.amountInBtc))
                 );
             });
 
@@ -143,14 +143,14 @@ class BtcTransactionHelper {
             if (actualChange > 0) {
                 tx.addOutput(
                     bitcoin.address.toOutputScript(fromAddress, this.btcConfig.network),
-                    this.nodeClient.btcToSatoshis(actualChange)
+                    BigInt(this.nodeClient.btcToSatoshis(actualChange))
                 );
             }
 
             if (paymentData) {
                 paymentData.forEach(data => {
                     const dataScript = bitcoin.payments.embed({ data: [data] });
-                    tx.addOutput(dataScript.output, 0); // OP_RETURN always with 0 value unless you want to burn coins
+                    tx.addOutput(dataScript.output, 0n); // OP_RETURN always with 0 value unless you want to burn coins
                 });
             }
 
@@ -158,12 +158,38 @@ class BtcTransactionHelper {
             let privateKeys = [senderAddressInformation.privateKey];
 
             if (senderAddressInformation.info) {
+                const network = this.nodeClient.getNetwork();
+                const multisigScript = senderAddressInformation.info.redeemScript;
+                // `createmultisig` returns the same raw multisig script under `redeemScript` regardless of
+                // address type; only for `legacy` is that value actually usable as-is as the P2SH redeem script.
+                const p2ms = bitcoin.payments.p2ms({ output: Buffer.from(multisigScript, 'hex'), network });
+                const p2shLegacy = bitcoin.payments.p2sh({ redeem: p2ms, network });
+                const p2shSegwit = bitcoin.payments.p2sh({
+                    redeem: bitcoin.payments.p2wsh({ redeem: p2ms, network }),
+                    network
+                });
+                const p2wsh = bitcoin.payments.p2wsh({ redeem: p2ms, network });
+
+                let multisigPrevTxFields;
+                if (fromAddress === p2shLegacy.address) {
+                    multisigPrevTxFields = { redeemScript: multisigScript };
+                } else if (fromAddress === p2shSegwit.address) {
+                    multisigPrevTxFields = {
+                        redeemScript: Buffer.from(p2shSegwit.redeem.output).toString('hex'),
+                        witnessScript: multisigScript
+                    };
+                } else if (fromAddress === p2wsh.address) {
+                    multisigPrevTxFields = { witnessScript: multisigScript };
+                } else {
+                    throw new Error(`Address ${fromAddress} does not match the provided multisig redeem script`);
+                }
+
                 utxosInfo.utxos.forEach(uxto => {
                     prevTxs.push({
                         txid: uxto.txid,
                         vout: uxto.vout,
                         scriptPubKey: uxto.scriptPubKey.toString('hex'),
-                        redeemScript: senderAddressInformation.info.redeemScript,
+                        ...multisigPrevTxFields,
                         amount: uxto.amount
                     });
                 });
@@ -184,7 +210,7 @@ class BtcTransactionHelper {
                             txid: uxto.txid,
                             vout: uxto.vout,
                             scriptPubKey: uxto.scriptPubKey.toString('hex'),
-                            redeemScript: p2shSegwit.redeem.output.toString('hex'),
+                            redeemScript: Buffer.from(p2shSegwit.redeem.output).toString('hex'),
                             amount: uxto.amount
                         });
                     });
@@ -274,7 +300,7 @@ class BtcTransactionHelper {
     decodeBase58Address(address, withVersion = true) {
         const decodedAddress = bitcoin.address.fromBase58Check(address);
         if (!withVersion) {
-            return decodedAddress.hash.toString('hex');
+            return Buffer.from(decodedAddress.hash).toString('hex');
         }
         const versionByte = Buffer.alloc(1);
         versionByte.writeUInt8(decodedAddress.version);
