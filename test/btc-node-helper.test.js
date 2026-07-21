@@ -89,7 +89,7 @@ describe('BtcNodeHelper', () => {
 
         // The public keys sent to the node have to correspond to the members private keys, in order
         const expectedPublicKeys = result.info.members.map(member =>
-            ECPair.fromWIF(member.privateKey, NETWORK).publicKey.toString('hex')
+            Buffer.from(ECPair.fromWIF(member.privateKey, NETWORK).publicKey).toString('hex')
         );
         assert.deepEqual(args[1], expectedPublicKeys);
 

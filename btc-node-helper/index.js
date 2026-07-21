@@ -78,7 +78,9 @@ module.exports = class BtcNodeHelper {
             members.push(await this.generateAddressInformation(type));
         }
 
-        const publicKeys = members.map(member => ECPair.fromWIF(member.privateKey, network).publicKey.toString('hex'));
+        const publicKeys = members.map(member =>
+            Buffer.from(ECPair.fromWIF(member.privateKey, network).publicKey).toString('hex')
+        );
 
         // `addmultisigaddress` was removed in Bitcoin Core 30 with the legacy wallet.
         // `createmultisig` does not require a wallet and takes public keys instead of addresses.

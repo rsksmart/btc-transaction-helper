@@ -258,7 +258,7 @@ describe('BtcTransactionHelper', () => {
                 amount: 3000,
                 txid: '74f7e8c0263be8b23b3deffbaf9ee74239076a0de57c695aef4669e22bee0d01',
                 vout: 0,
-                scriptPubKey: bitcoin.address.toOutputScript(p2shSegwit.address, network).toString('hex')
+                scriptPubKey: Buffer.from(bitcoin.address.toOutputScript(p2shSegwit.address, network)).toString('hex')
             }
         ];
 
@@ -283,7 +283,7 @@ describe('BtcTransactionHelper', () => {
         assert.equal(prevTxs[0].txid, utxos[0].txid);
         assert.equal(prevTxs[0].vout, utxos[0].vout);
         assert.equal(prevTxs[0].scriptPubKey, utxos[0].scriptPubKey);
-        assert.equal(prevTxs[0].redeemScript, p2shSegwit.redeem.output.toString('hex'));
+        assert.equal(prevTxs[0].redeemScript, Buffer.from(p2shSegwit.redeem.output).toString('hex'));
         assert.equal(prevTxs[0].amount, utxos[0].amount);
         assert.isTrue(signRawTransactionStub.args[0][2].includes(PRIVATE_KEY));
 
@@ -449,7 +449,7 @@ describe('BtcTransactionHelper', () => {
 
         tx.addOutput(
             bitcoin.address.toOutputScript(ADDRESS_INFORMATION.address, config.network),
-            conversion.btcToSatoshis(amountInBtc)
+            BigInt(conversion.btcToSatoshis(amountInBtc))
         );
 
         const getTransactionStub = sinon

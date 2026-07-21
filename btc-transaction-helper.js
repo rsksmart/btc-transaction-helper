@@ -133,7 +133,7 @@ class BtcTransactionHelper {
             recipientsTransactionInformation.forEach(output => {
                 tx.addOutput(
                     bitcoin.address.toOutputScript(output.recipientAddress, this.btcConfig.network),
-                    this.nodeClient.btcToSatoshis(output.amountInBtc)
+                    BigInt(this.nodeClient.btcToSatoshis(output.amountInBtc))
                 );
             });
 
@@ -143,14 +143,14 @@ class BtcTransactionHelper {
             if (actualChange > 0) {
                 tx.addOutput(
                     bitcoin.address.toOutputScript(fromAddress, this.btcConfig.network),
-                    this.nodeClient.btcToSatoshis(actualChange)
+                    BigInt(this.nodeClient.btcToSatoshis(actualChange))
                 );
             }
 
             if (paymentData) {
                 paymentData.forEach(data => {
                     const dataScript = bitcoin.payments.embed({ data: [data] });
-                    tx.addOutput(dataScript.output, 0); // OP_RETURN always with 0 value unless you want to burn coins
+                    tx.addOutput(dataScript.output, 0n); // OP_RETURN always with 0 value unless you want to burn coins
                 });
             }
 
@@ -184,7 +184,7 @@ class BtcTransactionHelper {
                             txid: uxto.txid,
                             vout: uxto.vout,
                             scriptPubKey: uxto.scriptPubKey.toString('hex'),
-                            redeemScript: p2shSegwit.redeem.output.toString('hex'),
+                            redeemScript: Buffer.from(p2shSegwit.redeem.output).toString('hex'),
                             amount: uxto.amount
                         });
                     });
@@ -274,7 +274,7 @@ class BtcTransactionHelper {
     decodeBase58Address(address, withVersion = true) {
         const decodedAddress = bitcoin.address.fromBase58Check(address);
         if (!withVersion) {
-            return decodedAddress.hash.toString('hex');
+            return Buffer.from(decodedAddress.hash).toString('hex');
         }
         const versionByte = Buffer.alloc(1);
         versionByte.writeUInt8(decodedAddress.version);
