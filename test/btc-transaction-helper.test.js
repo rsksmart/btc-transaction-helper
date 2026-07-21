@@ -368,6 +368,192 @@ describe('BtcTransactionHelper', () => {
         sendRawTransactionStub.restore();
     });
 
+    it('should transferBtc, multisig p2sh-segwit, providing the redeem and witness scripts', async () => {
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const network = config.network;
+
+        const recipientAddress = 'mxAyE9QUS2PoKAsNv7h9bx2aBkvoVA68A4';
+        const amountInBtc = 2000;
+        const recipientsTransactionInformation = [{ recipientAddress, amountInBtc }];
+
+        const member1 = {
+            address: 'mzP29BbArPnUuAdr1uFX3ZwbDUiNEkW5HH',
+            privateKey: 'cVGMwpMZEatVCTAz5hr4h56fvSHb2EqnxzHGCmxqXbASkBmGtZLX'
+        };
+        const member2 = {
+            address: 'mzYTf3HKxbNWFUodyMqGGc5Az7fsACQoCb',
+            privateKey: 'cRESFZCZZ7tEJPBoKBG53WU5xALnxpDN38s9jDVtkiYdKRuSehcx'
+        };
+        const pubkeys = [member1, member2].map(member => ECPair.fromWIF(member.privateKey, network).publicKey);
+        const p2ms = bitcoin.payments.p2ms({ m: 2, pubkeys, network });
+        const redeemScript = Buffer.from(p2ms.output).toString('hex');
+        const p2shSegwit = bitcoin.payments.p2sh({
+            redeem: bitcoin.payments.p2wsh({ redeem: p2ms, network }),
+            network
+        });
+
+        const senderAddressInformation = {
+            address: p2shSegwit.address,
+            info: {
+                members: [member1, member2],
+                redeemScript
+            }
+        };
+
+        const utxos = [
+            {
+                amount: 3000,
+                txid: 'dcec9f208a62edb700819331aab376c17620e4afad0cda4db2277c5313d3f12d',
+                vout: 0,
+                scriptPubKey: Buffer.from(bitcoin.address.toOutputScript(p2shSegwit.address, network)).toString('hex')
+            }
+        ];
+
+        const signedTxHex = `010000000001012df1d313537c27b24dda0cadafe42076c176b3aa31938100b7ed628a209fecdc`;
+        const txHash = `d6f493316fb648f63c626b10179dbc908090fc2262866f00eee402e99bd82bbb`;
+
+        const getUtxosStub = sinon.stub(btcTransactionHelper, 'getUtxos').resolves(utxos);
+        const signRawTransactionStub = sinon
+            .stub(btcTransactionHelper.nodeClient, 'signTransaction')
+            .resolves(signedTxHex);
+        const sendRawTransactionStub = sinon.stub(btcTransactionHelper.nodeClient, 'sendTransaction').resolves(txHash);
+
+        const result = await btcTransactionHelper.transferBtc(
+            senderAddressInformation,
+            recipientsTransactionInformation
+        );
+
+        assert.equal(result, txHash);
+
+        const prevTxs = signRawTransactionStub.args[0][1];
+        assert.lengthOf(prevTxs, 1);
+        assert.equal(prevTxs[0].txid, utxos[0].txid);
+        assert.equal(prevTxs[0].vout, utxos[0].vout);
+        assert.equal(prevTxs[0].scriptPubKey, utxos[0].scriptPubKey);
+        assert.equal(prevTxs[0].redeemScript, Buffer.from(p2shSegwit.redeem.output).toString('hex'));
+        assert.equal(prevTxs[0].witnessScript, redeemScript);
+        assert.equal(prevTxs[0].amount, utxos[0].amount);
+        assert.isTrue(signRawTransactionStub.args[0][2].includes(member1.privateKey));
+        assert.isTrue(signRawTransactionStub.args[0][2].includes(member2.privateKey));
+
+        getUtxosStub.restore();
+        signRawTransactionStub.restore();
+        sendRawTransactionStub.restore();
+    });
+
+    it('should transferBtc, multisig bech32, providing the witness script only', async () => {
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+        const network = config.network;
+
+        const recipientAddress = 'mxAyE9QUS2PoKAsNv7h9bx2aBkvoVA68A4';
+        const amountInBtc = 2000;
+        const recipientsTransactionInformation = [{ recipientAddress, amountInBtc }];
+
+        const member1 = {
+            address: 'mzP29BbArPnUuAdr1uFX3ZwbDUiNEkW5HH',
+            privateKey: 'cVGMwpMZEatVCTAz5hr4h56fvSHb2EqnxzHGCmxqXbASkBmGtZLX'
+        };
+        const member2 = {
+            address: 'mzYTf3HKxbNWFUodyMqGGc5Az7fsACQoCb',
+            privateKey: 'cRESFZCZZ7tEJPBoKBG53WU5xALnxpDN38s9jDVtkiYdKRuSehcx'
+        };
+        const pubkeys = [member1, member2].map(member => ECPair.fromWIF(member.privateKey, network).publicKey);
+        const p2ms = bitcoin.payments.p2ms({ m: 2, pubkeys, network });
+        const redeemScript = Buffer.from(p2ms.output).toString('hex');
+        const p2wsh = bitcoin.payments.p2wsh({ redeem: p2ms, network });
+
+        const senderAddressInformation = {
+            address: p2wsh.address,
+            info: {
+                members: [member1, member2],
+                redeemScript
+            }
+        };
+
+        const utxos = [
+            {
+                amount: 3000,
+                txid: 'dcec9f208a62edb700819331aab376c17620e4afad0cda4db2277c5313d3f12d',
+                vout: 0,
+                scriptPubKey: Buffer.from(bitcoin.address.toOutputScript(p2wsh.address, network)).toString('hex')
+            }
+        ];
+
+        const signedTxHex = `010000000001012df1d313537c27b24dda0cadafe42076c176b3aa31938100b7ed628a209fecdc`;
+        const txHash = `d6f493316fb648f63c626b10179dbc908090fc2262866f00eee402e99bd82bbb`;
+
+        const getUtxosStub = sinon.stub(btcTransactionHelper, 'getUtxos').resolves(utxos);
+        const signRawTransactionStub = sinon
+            .stub(btcTransactionHelper.nodeClient, 'signTransaction')
+            .resolves(signedTxHex);
+        const sendRawTransactionStub = sinon.stub(btcTransactionHelper.nodeClient, 'sendTransaction').resolves(txHash);
+
+        const result = await btcTransactionHelper.transferBtc(
+            senderAddressInformation,
+            recipientsTransactionInformation
+        );
+
+        assert.equal(result, txHash);
+
+        const prevTxs = signRawTransactionStub.args[0][1];
+        assert.lengthOf(prevTxs, 1);
+        assert.equal(prevTxs[0].txid, utxos[0].txid);
+        assert.equal(prevTxs[0].vout, utxos[0].vout);
+        assert.equal(prevTxs[0].scriptPubKey, utxos[0].scriptPubKey);
+        assert.isUndefined(prevTxs[0].redeemScript);
+        assert.equal(prevTxs[0].witnessScript, redeemScript);
+        assert.equal(prevTxs[0].amount, utxos[0].amount);
+        assert.isTrue(signRawTransactionStub.args[0][2].includes(member1.privateKey));
+        assert.isTrue(signRawTransactionStub.args[0][2].includes(member2.privateKey));
+
+        getUtxosStub.restore();
+        signRawTransactionStub.restore();
+        sendRawTransactionStub.restore();
+    });
+
+    it('should fail to transferBtc, multisig when the sender address does not match the redeem script', async () => {
+        const btcTransactionHelper = new BtcTransactionHelper(config);
+
+        const recipientAddress = 'mxAyE9QUS2PoKAsNv7h9bx2aBkvoVA68A4';
+        const recipientsTransactionInformation = [{ recipientAddress, amountInBtc: 2000 }];
+        const redeemScript =
+            '5221039fac837f0c8a3f93fd63a9574677ca86bb60427149ac8c104d0f7da0be0555132103c35665b6940450ec15219634c4a85e8432bf4d89d2de265274b7b70e83d5982a52ae';
+
+        const senderAddressInformation = {
+            address: TEST_BTC_ADDRESS, // not derived from redeemScript above
+            info: {
+                members: [
+                    {
+                        address: 'mzP29BbArPnUuAdr1uFX3ZwbDUiNEkW5HH',
+                        privateKey: 'cVGMwpMZEatVCTAz5hr4h56fvSHb2EqnxzHGCmxqXbASkBmGtZLX'
+                    },
+                    {
+                        address: 'mzYTf3HKxbNWFUodyMqGGc5Az7fsACQoCb',
+                        privateKey: 'cRESFZCZZ7tEJPBoKBG53WU5xALnxpDN38s9jDVtkiYdKRuSehcx'
+                    }
+                ],
+                redeemScript
+            }
+        };
+
+        const utxos = [
+            {
+                amount: 3000,
+                txid: 'dcec9f208a62edb700819331aab376c17620e4afad0cda4db2277c5313d3f12d',
+                vout: 0,
+                scriptPubKey: 'a914f66ff70094b55bdd8e07c21ef4ae4e9860a8f52887'
+            }
+        ];
+
+        const getUtxosStub = sinon.stub(btcTransactionHelper, 'getUtxos').resolves(utxos);
+
+        await expect(
+            btcTransactionHelper.transferBtc(senderAddressInformation, recipientsTransactionInformation)
+        ).to.eventually.be.rejectedWith('Error during transfer process');
+
+        getUtxosStub.restore();
+    });
+
     it('should transferBtc, with paymentData', async () => {
         const btcTransactionHelper = new BtcTransactionHelper(config);
 

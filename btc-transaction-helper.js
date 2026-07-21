@@ -158,12 +158,38 @@ class BtcTransactionHelper {
             let privateKeys = [senderAddressInformation.privateKey];
 
             if (senderAddressInformation.info) {
+                const network = this.nodeClient.getNetwork();
+                const multisigScript = senderAddressInformation.info.redeemScript;
+                // `createmultisig` returns the same raw multisig script under `redeemScript` regardless of
+                // address type; only for `legacy` is that value actually usable as-is as the P2SH redeem script.
+                const p2ms = bitcoin.payments.p2ms({ output: Buffer.from(multisigScript, 'hex'), network });
+                const p2shLegacy = bitcoin.payments.p2sh({ redeem: p2ms, network });
+                const p2shSegwit = bitcoin.payments.p2sh({
+                    redeem: bitcoin.payments.p2wsh({ redeem: p2ms, network }),
+                    network
+                });
+                const p2wsh = bitcoin.payments.p2wsh({ redeem: p2ms, network });
+
+                let multisigPrevTxFields;
+                if (fromAddress === p2shLegacy.address) {
+                    multisigPrevTxFields = { redeemScript: multisigScript };
+                } else if (fromAddress === p2shSegwit.address) {
+                    multisigPrevTxFields = {
+                        redeemScript: Buffer.from(p2shSegwit.redeem.output).toString('hex'),
+                        witnessScript: multisigScript
+                    };
+                } else if (fromAddress === p2wsh.address) {
+                    multisigPrevTxFields = { witnessScript: multisigScript };
+                } else {
+                    throw new Error(`Address ${fromAddress} does not match the provided multisig redeem script`);
+                }
+
                 utxosInfo.utxos.forEach(uxto => {
                     prevTxs.push({
                         txid: uxto.txid,
                         vout: uxto.vout,
                         scriptPubKey: uxto.scriptPubKey.toString('hex'),
-                        redeemScript: senderAddressInformation.info.redeemScript,
+                        ...multisigPrevTxFields,
                         amount: uxto.amount
                     });
                 });
