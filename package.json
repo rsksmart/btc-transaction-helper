@@ -13,7 +13,7 @@
   "dependencies": {
     "bitcoin": "3.0.3",
     "bitcoinjs-lib": "6.1.7",
-    "ecpair": "2.1.0",
+    "ecpair": "3.0.1",
     "tiny-secp256k1": "2.2.4"
   },
   "devDependencies": {
