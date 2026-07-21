@@ -103,7 +103,7 @@ export class BtcTransactionHelper {
         paymentData: Buffer[]
     ): Promise<string>;
     getAddressBalance(address: string): Promise<number>;
-    getOutputAddress(outputScript: Buffer): string;
+    getOutputAddress(outputScript: Uint8Array): string;
     getTransaction(txHash: string): Promise<Transaction>;
     fundAddress(address: string, amountInBtc: number, mineBlock?: boolean = true): Promise<string>;
     mine(blocks: number = 1): Promise<string[]>;
